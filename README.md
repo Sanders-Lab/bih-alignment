@@ -7,7 +7,7 @@ Scripts for performing alignment of paired-end NGS reads to the hg38 reference g
 You can download this repository like so:
 
 ```
-git clone https://github.com/benedict909/bih-alignment
+git clone https://github.com/Sanders-Lab/bih-alignment
 ```
 
 And install the required conda environment (which has all required packages) into your BIH cluster conda workspace like so:
