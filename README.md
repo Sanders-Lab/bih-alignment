@@ -4,10 +4,10 @@ Scripts for performing alignment of paired-end NGS reads to the hg38 reference g
 
 ## Download raw sequencing data
 
-You can download raw fastq data from the genomics facility file exchange server using your MDC account (user@MDC-BERLIN) as follows (adapt link from Email):
+You can download raw fastq data from the genomics facility file exchange server using your MDC account (by changing user@MDC-BERLIN) as follows (adapt link from Email):
 
 ```
-wget --user=user@MDC-BERLIN --ask-password  https://file-exchange.bihealth.org/c2eda02f-523b-4d1a-8909-aea0cd0f5a2d/
+wget -rnd -np --user=user@MDC-BERLIN --ask-password -A '*.gz'  https://file-exchange.bihealth.org/c2eda02f-523b-4d1a-8909-aea0cd0f5a2d/
 ```
 
 Find more information on how to get raw data here: https://bimsbstatic.mdc-berlin.de/genomics/howto/user_transfer_fileboxes.html.
