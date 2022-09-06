@@ -133,6 +133,7 @@ echo 'library gc_content n_reads n_reads_mapped mean_insert_size' | tr " " "\t" 
 
 for library in $libraries; do
 	(
+	echo "combining QC stats in ${library}"
 	bamfile=${bam_dir}/${library}.${sortorsorted}.mdup.bam
 
 	# no. of GC bases in BAM file
