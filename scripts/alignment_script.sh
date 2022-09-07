@@ -82,6 +82,7 @@ tmp_dir=//fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name} ; mkdir 
 bam_dir=//fast/groups/ag_sanders/work/data/${project_name}/bam; mkdir -m 775 $bam_dir
 qc_dir=//fast/groups/ag_sanders/work/data/${project_name}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
+logsdir=$//fast/groups/ag_sanders/work/data/${project_name}/logs ; mkdir -m 775 $logsdir
 
 echo "Temporary/intermediate files will be written to ${tmp_dir}"
 echo "Final .bam files will be written to ${bam_dir}"
@@ -138,16 +139,20 @@ libraries=$(echo $fastq_files | sed -e "s/${mate1_suffix}//g;s/${mate2_suffix}//
 
 samdir=${tmp_dir}/sam ; mkdir -m 775 $samdir
 
+alnlog=${logsdir}/$(date +%Y%m%d)_${project_name}_bwamem_log.txt
+echo "see ${alnlog} for detailed BWA MEM log"
+
 # perform alignment all libraries
 for library in $libraries
 do
 	(
 	echo "performing alignment on ${library}"
+	echo "performing alignment on ${library}" >> $alnlog
     input1=${fastq_dir}/${library}${mate1_suffix}
     input2=${fastq_dir}/${library}${mate2_suffix}
 
-    bwa mem -t 4 -v 1 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
-    	$ref_genome $input1 $input2 > ${samdir}/${library}.sam
+    bwa mem -t 4 -v 3 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
+    	$ref_genome $input1 $input2 > ${samdir}/${library}.sam 2>> $alnlog
 	) &
     if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads / 4 number of iterations to be executed in parallel
     then
@@ -169,6 +174,9 @@ bam_tmpdir=${tmp_dir}/bam_tmpdir ; mkdir -m 775 $bam_tmpdir
 mdup_metrics_dir=${statsdir}/mdup_metrics ; mkdir -m 775 $mdup_metrics_dir
 mdup_tmpdir=${tmp_dir}/mdup_tmp ; mkdir -m 775 $mdup_tmpdir
 
+duplog=${logsdir}/$(date +%Y%m%d)_${project_name}_mdup_log.txt
+echo "see ${duplog} for detailed BWA MEM log"
+
 # convert, process, filter SAM files
 for library in $libraries
 do
@@ -185,7 +193,7 @@ do
     picard MarkDuplicates -I ${bam_tmpdir}/${library}.sort.bam \
         -O ${bam_tmpdir}/${library}.sort.mdup.bam \
         -M ${mdup_metrics_dir}/${library}_mdup_metrics.txt \
-        --QUIET true --VERBOSITY ERROR --TMP_DIR ${mdup_tmpdir}
+        --QUIET true --VERBOSITY ERROR --TMP_DIR ${mdup_tmpdir} 2>> $duplog
     samtools index -@ 3 ${bam_tmpdir}/${library}.sort.mdup.bam # generate index
 
 	# copy sorted marked duplicates BAM files and their indexes to work drive
