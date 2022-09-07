@@ -125,9 +125,9 @@ gzip -f ${binneddp_dir}/*
 gzip -f ${insert_samps_dir}/*
 
 ##################################################################################################
-# 5. Extract QC stats for plotting
+# 6. Extract QC stats for plotting
 ##################################################################################################
-printf '\n ### 5. Extract QC stats for plotting  #####\n'
+printf '\n ### 6. Extract QC stats for plotting  #####\n'
 
 echo 'library gc_content n_reads n_reads_mapped mean_insert_size' | tr " " "\t" > ${statsdir}/all_samples_qc_metrics.txt
 

@@ -17,7 +17,7 @@
 # June 2022
 
 # Needs changing for each new project:
-project_name= # the name of the dir in /fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
+project_name=$1 # the name of the dir in /fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
 
 # Initiation
 printf '\n ### Activating conda environment ####\n'
