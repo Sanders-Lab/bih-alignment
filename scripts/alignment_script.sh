@@ -82,7 +82,7 @@ tmp_dir=//fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name} ; mkdir 
 bam_dir=//fast/groups/ag_sanders/work/data/${project_name}/bam; mkdir -m 775 $bam_dir
 qc_dir=//fast/groups/ag_sanders/work/data/${project_name}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
-logsdir=$//fast/groups/ag_sanders/work/data/${project_name}/logs ; mkdir -m 775 $logsdir
+logsdir=//fast/groups/ag_sanders/work/data/${project_name}/logs ; mkdir -m 775 $logsdir
 
 echo "Temporary/intermediate files will be written to ${tmp_dir}"
 echo "Final .bam files will be written to ${bam_dir}"
