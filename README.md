@@ -42,13 +42,15 @@ Where `$project_name` is the the name of the directory in `/fast/groups/ag_sande
 
 You can either edit `${myemail}` and `${myname}` manually, or (to make your life easier) add them as an environmental bash variables (e.g. by adding `export myname=benedict` to your `~/.bashrc` file). 
 
+To ensure the pipeline can locate and execute the scripts in the `exec/` directory, please submit the slurm job from the directory into which you initially cloned this repository (i.e. run `sbatch bih-alignment/scripts/alignment_script.sh` as in the example above). 
+
 This repo contains the following scripts:
 
 * `alignment_script.sh` is the complete pipeline and is therefore the recommended script to use.
 
 * `alignment_qc_script.sh` can be run if you only wish to run quality control on data that is already aligned.
 
-The files in `/exec` are called by the main scripts and should not be executed in isolation.  
+The files in `exec/` are called by the main scripts and should not be executed in isolation.  
 
 
 ## Configuration (Optional)
@@ -64,3 +66,7 @@ The following parameters can be changed in the global options section in `script
 * `run_qc`: whether the alignment QC script should be run automatically after alignment is complete [TRUE/FALSE] (default = TRUE)
 
 With these 4 parameters set correctly you should be able to run the pipeline. Further information on each step of the pipeline can be found in the comments of each script.
+
+## Authors 
+
+Code written by Benedict Monteiro & Patrick Weidner. Please contact us with any problems or submit them as an issue in this Github repository.
