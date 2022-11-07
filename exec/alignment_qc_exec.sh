@@ -57,11 +57,12 @@ moscatchdir=${qc_dir}/mosaicatcher ; mkdir -m 775 $moscatchdir
 # Run mosaicatcher in singularity
 echo 'launching singulairty from docker://smei/mosaicatcher-pipeline-rpe1-chr3'
 #//fast/groups/ag_sanders/work/tools/mosaicatcher/build/mosaic count \ # only works if you have mosaic working in your environment (singularity is far easier)
-singularity exec --bind /fast docker://smei/mosaicatcher-pipeline-rpe1-chr3 \
-	mosaic count \
+# singularity exec --bind /fast docker://smei/mosaicatcher-pipeline-rpe1-chr3 \
+# 	mosaic count \
+mosaicatcher count \
 	-o ${moscatchdir}/counts.txt.gz -i ${moscatchdir}/counts.info \
-    -x //fast/work/groups/ag_sanders/data/reference/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
-    -w 200000 $(ls ${bam_dir}/*.bam)
+	-x //fast/work/groups/ag_sanders/data/reference/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
+	-w 200000 $(ls ${bam_dir}/*.bam)
 
 # run R script to generate mosaicatcher plots
 echo 'running mosaicather R script'
