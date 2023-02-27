@@ -32,6 +32,9 @@ n_threads=$(nproc) # number of threads given to slurm job, for highest efficienc
 n_threads_divided=$(expr $n_threads / 4)
 submit_dir=$SLURM_SUBMIT_DIR
 
+# print to log
+echo "project_name: ${project_name}, mate1_suffix: ${mate1_suffix}, mate2_suffix: ${mate2_suffix}"
+
 ##################################################################################################
 # 2. Activate conda environment
 ##################################################################################################
