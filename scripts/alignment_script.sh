@@ -21,7 +21,7 @@ printf '\n ### 1. Setting global options ####\n'
 # Needs changing these for each new project:
 project_name=$1 # the name of the folder in //fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
 memperthread=2G # memory assigned per thread in slurm job
-mate1_suffix=_R1.fastq.gz # suffix of read pair mate 1 fastq file (e.g. _R1.fastq.gz)
+mate1_suffix=$2 # suffix of read pair mate 1 fastq file (e.g. _R1.fastq.gz)
 run_qc=TRUE # whether the alignment QC script should be run automatically [TRUE/FALSE]
 
 # Probably don't need changing at the start of a new project:
@@ -90,7 +90,7 @@ echo "Final .bam files will be written to ${bam_dir}"
 # confirm that there are .fastq files in the fastq_dir
 [ ! $(ls ${fastq_dir}/*${mate1_suffix} | wc -l) -ge 1 ] && { echo "ERROR: no files were found with the suffix ${mate1_suffix} in ${fastq_dir}" ; echo "Please change the mate1_suffix manually in ${SLURM_SUBMIT_DIR}/scripts/alignment_script.sh" ; exit ; }
 testfile=$(ls $fastq_dir | head -n1)
-if [ ! $(zcat ${fastq_dir}/${testfile} | cut -c 1) = '@' ]
+if [ ! $(zcat ${fastq_dir}/${testfile} | cut -c 1 | head -n1) = '@' ]
 then
 	echo "Error: No fastq files were found in ${fastq_dir}/, exiting script"
     echo "(the first character of the file ${fastq_dir}/${testfile} is not '@', suggesting it is not correct fastq format)"
