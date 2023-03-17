@@ -136,9 +136,9 @@ echo "MutiQC results saved to: ${multiqc_dir}"
 printf '\n ### 5. Running alignment #####\n'
 
 # make unique list of library names by removing suffixes
-fastq_files=$(ls $fastq_dir)
-libraries=$(echo $fastq_files | sed -e "s/${mate1_suffix}//g;s/${mate2_suffix}//g" | \
-        tr ' ' '\n' | sort -u | tr '\n' ' ' | less)
+libraries=$(ls $fastq_dir/*fastq.gz \
+	| sed -e "s?${fastq_dir}/??g;s?${mate1_suffix}??g;s?${mate2_suffix}??g" \
+	| sort - u)
 
 samdir=${tmp_dir}/sam ; mkdir -m 775 $samdir
 
