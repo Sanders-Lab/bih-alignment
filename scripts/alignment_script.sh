@@ -23,14 +23,29 @@ project_name=$1 # the name of the folder in //fast/groups/ag_sanders/work/data c
 memperthread=2G # memory assigned per thread in slurm job
 mate1_suffix=$2 # suffix of read pair mate 1 fastq file (e.g. _R1.fastq.gz)
 run_qc=TRUE # whether the alignment QC script should be run automatically [TRUE/FALSE]
+organism=$3 # whether alignment is on human or mouse data
 
 # Probably don't need changing at the start of a new project:
 mate2_suffix=$(echo $mate1_suffix | sed 's/1/2/') # suffix of mate 2 fastq file
-ref_genome=//fast/groups/ag_sanders/work/data/reference/genomes/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz # path to reference genome
 fastq_dir=//fast/groups/ag_sanders/work/data/${project_name}/fastq # dir containing fastq format files
 n_threads=$(nproc) # number of threads given to slurm job, for highest efficiency use a multiple of 4 (e.g. 32, 64, etc.)
 n_threads_divided=$(expr $n_threads / 4)
 submit_dir=$SLURM_SUBMIT_DIR
+
+# set reference genome
+if [ $organism = 'human' ]
+then
+	ref_genome=//fast/groups/ag_sanders/work/data/reference/genomes/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz # path to reference genome
+	echo "Aligning human data, reference genome set to: $ref_genome"
+elif [ $organism = 'mouse' ]
+then
+	ref_genome=//fast/groups/ag_sanders/work/data/reference/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
+	echo "Aligning mouse data, reference genome set to: $ref_genome"
+else
+	echo "ERROR: command line argument 3 must be [human/mouse], currently it is: $organism"
+	exit
+fi
+
 
 # print to log
 echo "project_name: ${project_name}, mate1_suffix: ${mate1_suffix}, mate2_suffix: ${mate2_suffix}"
