@@ -153,7 +153,7 @@ printf '\n ### 5. Running alignment #####\n'
 # make unique list of library names by removing suffixes
 libraries=$(ls $fastq_dir/*fastq.gz \
 	| sed -e "s?${fastq_dir}/??g;s?${mate1_suffix}??g;s?${mate2_suffix}??g" \
-	| sort - u)
+	| sort -u)
 
 samdir=${tmp_dir}/sam ; mkdir -m 775 $samdir
 
