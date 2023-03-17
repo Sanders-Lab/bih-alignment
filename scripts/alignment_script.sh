@@ -122,7 +122,7 @@ multiqc_dir=${qc_dir}/multiqc ; mkdir -m 775 $multiqc_dir
 
 # run FastQC to generate quality metrics on
 echo "Running FastQC"
-fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*
+fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*fastq.gz
 
 # run multiqc
 echo "Running MutiQC to combine FastQC results"
