@@ -13,6 +13,9 @@ wget -rnd -np --user=user@MDC-BERLIN --ask-password -A '*.gz'  https://file-exch
 Find more information on how to get raw data here: https://bimsbstatic.mdc-berlin.de/genomics/howto/user_transfer_fileboxes.html.
 Note that file boxes will be kept for 14 days only.
 
+Depending on how closely the Genomics Platform paid attention to our submission form, you may have to edit the filenames of the FASTQ files to get them into our desired format (i.e. `P3069_i301.1.fastq.gz`). 
+This can be achieved with the following script: `/fast/groups/ag_sanders/work/projects/benedict/fastq_name_convert/fastq_name_convert.sh`, which compares the indices in the FASTQ header to those that we submitted , and uses this information to rename the file accordingly. 
+
 ## Installation
 
 You can download this repository like so:
