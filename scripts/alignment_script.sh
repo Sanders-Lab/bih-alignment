@@ -18,6 +18,7 @@ echo 'Running alignment script' ; date
 ##################################################################################################
 printf '\n ### 1. Setting global options ####\n'
 
+# INPUT: $1 = project name [P3028], $2  = mate1_suffix [.1.fastq.gz], $3 = organism [human/mouse]
 # Needs changing these for each new project:
 project_name=$1 # the name of the folder in //fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
 memperthread=2G # memory assigned per thread in slurm job
@@ -238,7 +239,8 @@ if [ $run_qc = 'TRUE' ]
 then
 	echo "launching QC script ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.sh"
 	bash ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.sh \
-		$project_name
+		$project_name \
+		$organism
 fi
 
 echo "Finished aligning and QC on ${project_name}!" ; date
