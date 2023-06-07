@@ -7,9 +7,11 @@ echo 'Running QC script' ; date
 ##################################################################################################
 printf '\n ### 1. Setting global options ####\n'
 
+# INPUT: $1 = project name, $2  = organism
 # Needs changing these for each new project:
 project_name=$1 # the name of the dir in /fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
-echo "project_name set to: $project_name"
+organism=$2
+echo "project_name set to: ${project_name}, organism set to ${organism}"
 
 n_threads=$(nproc) # number of threads given to slurm job, for best results use a multiple of 4 (e.g. 32, 64, etc.)
 n_threads_divided=$(expr $n_threads / 4)
@@ -173,7 +175,8 @@ printf '\n ### 7. running R script to plot QC metrics  #####\n'
 
 Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.R \
 	$project_name \
-	$n_threads
+	$n_threads \
+	$organism
 
 echo "Finished alignment script on ${project_name}!" ; date
 
