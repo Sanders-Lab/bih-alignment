@@ -16,8 +16,10 @@
 # script for running alignment QC *separately* to alignment pipeline (alignment must have already been run successfully)
 # June 2022
 
+# INPUT: $1 = project name, $2  = organism
 # Needs changing for each new project:
 project_name=$1 # the name of the dir in /fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
+organism=$2
 
 # Initiation
 printf '\n ### Activating conda environment ####\n'
@@ -60,4 +62,5 @@ fi
 # run script
 echo "launching QC script ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.sh"
 bash ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.sh \
-	$project_name
+	$project_name \
+	$organism
