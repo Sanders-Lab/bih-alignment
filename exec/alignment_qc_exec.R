@@ -243,13 +243,16 @@ bpR_calcs = function (bamfile, ID = basename(bamfile), pairedEndReads = TRUE,
 }
 
 # load command line args
-project_name = NA ; n_threads = NA
+project_name = NA ; n_threads = NA ; myspecies = NA
 args = commandArgs(trailingOnly=T)
 project_name = args[1] 
 n_threads= as.numeric(args[2])
+myspecies = args[3] 
 
 if(is.na(project_name)) stop('set project_name in command line argument')
 if(is.na(n_threads)) stop('set n_threads in command line argument')
+if(is.na(myspecies)) stop('set myspecies in command line argument')
+if(!myspecies %in% c("mouse","human")) stop('myspecies must be set to human or mouse')
 
 print("terminal arguments loaded", quote = F)
 print(paste("project_name =",project_name), quote = F)
@@ -257,7 +260,8 @@ print(paste("n_threads =",n_threads), quote = F)
 
 # run breakpointR function to calc background
 bpr_indir = file.path("//fast/groups/ag_sanders/work/data",project_name,"bam")
-mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
+if(myspecies == "human") mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
+if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
 
 print(paste("Running breakpointR on bam files in", bpr_indir), quote = F)
 
