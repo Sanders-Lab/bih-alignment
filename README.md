@@ -1,4 +1,4 @@
-# bih-alignment
+# BIH alignment
 
 Scripts for performing alignment of paired-end NGS reads to the hg38 reference genome using BWA-MEM on the BIH HPC cluster. 
 
@@ -11,12 +11,12 @@ wget -rnd -np --user=user@MDC-BERLIN --ask-password -A '*.gz'  https://file-exch
 ```
 
 Find more information on how to get raw data here: https://bimsbstatic.mdc-berlin.de/genomics/howto/user_transfer_fileboxes.html.
-Note that file boxes will be kept for 14 days only.
+Note that file boxes will be kept for 14 days only!
 
 Depending on how closely the Genomics Platform paid attention to our submission form, you may have to edit the filenames of the FASTQ files to get them into our desired format (i.e. `P3069_i301.1.fastq.gz`). 
 This can be achieved with the following script: `/fast/groups/ag_sanders/work/projects/benedict/fastq_name_convert/fastq_name_convert.sh`, which compares the indices in the FASTQ header to those that we submitted , and uses this information to rename the file accordingly. 
 
-## 2. Installation
+## 2. 📕 Installation
 
 You can download this repository like so:
 
@@ -30,7 +30,7 @@ And install the required conda environment (which has all required packages) int
 conda env create --force --file bih-alignment/alignmentenv_20220905.yml
 ```
 
-## 3. Usage 
+## 3. 🛑 Usage 
 
 Once the repo is cloned you can launch the complete alignment and QC pipeline like so:
 ```
@@ -85,6 +85,8 @@ The following parameters can be changed in the global options section in `script
 
 With these parameters set correctly you should be able to run the pipeline. Further information on each step of the pipeline can be found in the comments of each script.
 
-## 6. Authors 
+## 6. 💂‍♂️ Authors 
+- [Benedict Monteiro](https://github.com/pweidner)
+- [Patrick Weidner](https://github.com/pweidner)
 
-Code written by Benedict Monteiro & Patrick Weidner. Please contact us with any problems or submit them as an issue in this Github repository.
+Please contact us with any problems or submit them as an issue in this Github repository.
