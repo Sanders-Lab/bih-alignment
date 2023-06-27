@@ -2,7 +2,7 @@
 
 Scripts for performing alignment of paired-end NGS reads to the hg38 reference genome using BWA-MEM on the BIH HPC cluster. 
 
-## Download raw sequencing data
+## 1. Download raw sequencing data
 
 You can download raw fastq data from the genomics facility file exchange server using your MDC account (by changing user@MDC-BERLIN) as follows (adapt link from Email):
 
@@ -16,7 +16,7 @@ Note that file boxes will be kept for 14 days only.
 Depending on how closely the Genomics Platform paid attention to our submission form, you may have to edit the filenames of the FASTQ files to get them into our desired format (i.e. `P3069_i301.1.fastq.gz`). 
 This can be achieved with the following script: `/fast/groups/ag_sanders/work/projects/benedict/fastq_name_convert/fastq_name_convert.sh`, which compares the indices in the FASTQ header to those that we submitted , and uses this information to rename the file accordingly. 
 
-## Installation
+## 2. Installation
 
 You can download this repository like so:
 
@@ -30,7 +30,7 @@ And install the required conda environment (which has all required packages) int
 conda env create --force --file bih-alignment/alignmentenv_20220905.yml
 ```
 
-## Usage 
+## 3. Usage 
 
 Once the repo is cloned you can launch the complete alignment and QC pipeline like so:
 ```
@@ -60,7 +60,7 @@ This repo contains the following scripts:
 
 The files in `exec/` are called by the main scripts and should not be executed in isolation.  
 
-## Usage (QC only)
+## 4. Usage (QC only)
 
 If you already have aligned BAM files and wish to run the quality control script in isolation, you can do so like this:
 ```
@@ -73,7 +73,7 @@ sbatch \
 ```
 
 
-## Configuration (Optional)
+## 5. Configuration (Optional)
 
 The following parameters can be changed in the global options section in `scripts/alignment_scripts.sh` at the start of each new project:
 
