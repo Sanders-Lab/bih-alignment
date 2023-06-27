@@ -86,7 +86,7 @@ The following parameters can be changed in the global options section in `script
 With these parameters set correctly you should be able to run the pipeline. Further information on each step of the pipeline can be found in the comments of each script.
 
 ## 6. 💂‍♂️ Authors 
-- [Benedict Monteiro](https://github.com/pweidner)
+- [Benedict Monteiro](https://github.com/benedict909)
 - [Patrick Weidner](https://github.com/pweidner)
 
 Please contact us with any problems or submit them as an issue in this Github repository.
