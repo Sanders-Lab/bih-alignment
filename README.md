@@ -35,13 +35,12 @@ conda env create --force --file bih-alignment/alignmentenv_20220905.yml
 Once the repo is cloned you can launch the complete alignment and QC pipeline like so:
 ```
 sbatch \
-  -J alignment \
-  -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment.txt \
-  --mail-user=${myemail} \
-  bih-alignment/scripts/alignment_script.sh \
-  $project_name \
-  .1.fastq.gz \
-  human
+    -J alignment \
+    -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment.txt \
+    bih-alignment/scripts/alignment_script.sh \
+    $project_name \
+    .1.fastq.gz \
+    human
 ```
 * Where `$project_name` is the the name of the directory in `/fast/groups/ag_sanders/work/data` containing the reads, which should contain a dir named `fastq/` with the read files (e.g. set to `P1593` to align reads in `/fast/groups/ag_sanders/work/data/P1593/fastq`). 
 
@@ -49,7 +48,7 @@ sbatch \
 
 * The third command line variable is the organism to which you want to align the reference genome, currently this can either be set to `human` or `mouse`.
 
-You can either edit `${myemail}` and `${myname}` manually, or (to make your life easier) add them as an environmental bash variables (e.g. by adding `export myname=benedict` to your `~/.bashrc` file). 
+You can either edit `${myname}` manually, or (to make your life easier) add them as an environmental bash variables (e.g. by adding `export myname=benedict` to your `~/.bashrc` file). 
 
 To ensure the pipeline can locate and execute the scripts in the `exec/` directory, please submit the slurm job from the directory into which you initially cloned this repository (i.e. run `sbatch bih-alignment/scripts/alignment_script.sh` as in the example above). 
 
@@ -61,6 +60,18 @@ This repo contains the following scripts:
 
 The files in `exec/` are called by the main scripts and should not be executed in isolation.  
 
+## Usage (QC only)
+
+If you already have aligned BAM files and wish to run the quality control script in isolation, you can do so like this:
+```
+sbatch \
+    -J alnQC \
+    -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment_qc.txt \
+    bih-alignment/scripts/alignment_qc.sh \
+    $project_name \
+    human
+```
+
 
 ## Configuration (Optional)
 
@@ -70,11 +81,9 @@ The following parameters can be changed in the global options section in `script
 
 * `memperthread` the memory assigned per thread in slurm job (recommended 2-4G)
 
-* `mate1_suffix`: the suffix of read pair mate 1 fastq file (e.g. `_R1.fastq.gz`)
-
 * `run_qc`: whether the alignment QC script should be run automatically after alignment is complete [TRUE/FALSE] (default = TRUE)
 
-With these 4 parameters set correctly you should be able to run the pipeline. Further information on each step of the pipeline can be found in the comments of each script.
+With these parameters set correctly you should be able to run the pipeline. Further information on each step of the pipeline can be found in the comments of each script.
 
 ## Authors 
 
