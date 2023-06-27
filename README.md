@@ -85,6 +85,6 @@ The following parameters can be changed in the global options section in `script
 
 With these parameters set correctly you should be able to run the pipeline. Further information on each step of the pipeline can be found in the comments of each script.
 
-## Authors 
+## 6. Authors 
 
 Code written by Benedict Monteiro & Patrick Weidner. Please contact us with any problems or submit them as an issue in this Github repository.
