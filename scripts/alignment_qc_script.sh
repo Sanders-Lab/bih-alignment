@@ -37,10 +37,10 @@ source ~/.bashrc
 conda activate alignmentenv
 
 # test if sequencing project directory exists
-if [[ ! -d /fast/groups/ag_sanders/work/data/${project_name} ]]
+if [[ ! -d ${SLURM_SUBMIT_DIR}/bam ]]
 then
-        echo "ERROR: this dir does not exist: /fast/groups/ag_sanders/work/data/${project_name}"
-        echo "please set project_name in global options to a real directory!"
+        echo "ERROR: this dir does not exist: ${SLURM_SUBMIT_DIR}/bam"
+        echo "please launch from directory that contains a bam directory!"
         exit
 fi
 
