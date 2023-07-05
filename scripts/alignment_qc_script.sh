@@ -9,9 +9,7 @@
 #SBATCH --partition=highmem
 #SBATCH --exclusive
 #SBATCH --time=2-00:00
-#SBATCH --mem-per-cpu=3G
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=benedict.monteiro@mdc-berlin.de
+#SBATCH --mem-per-cpu=2G
 
 # script for running alignment QC *separately* to alignment pipeline (alignment must have already been run successfully)
 # June 2022
