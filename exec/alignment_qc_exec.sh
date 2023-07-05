@@ -63,7 +63,7 @@ echo 'launching singulairty from docker://smei/mosaicatcher-pipeline-rpe1-chr3'
 # 	mosaic count \
 mosaicatcher count \
 	-o ${moscatchdir}/counts.txt.gz -i ${moscatchdir}/counts.info \
-	-x //fast/work/groups/ag_sanders/data/reference/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
+	-x /fast/work/groups/ag_sanders/data/references/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
 	-w 200000 $(ls ${bam_dir}/*.bam)
 
 # run R script to generate mosaicatcher plots
@@ -104,18 +104,18 @@ for library in $libraries; do
 
 	# depth stats per 200kb bin
 	# bedtools coverage -mean \
- #        -a //fast/groups/ag_sanders/work/data/reference/bedfiles/hg38_bedfile_200kb_intervals.bed \
- #        -b $bamfile > ${binneddp_dir}/${library}_mean_depth_200kb_bin.txt
+	#-a //fast/groups/ag_sanders/work/data/reference/bedfiles/hg38_bedfile_200kb_intervals.bed \
+ 	#-b $bamfile > ${binneddp_dir}/${library}_mean_depth_200kb_bin.txt
 
 	# depth stats per chromo
 	bedtools coverage -mean \
-        -a //fast/groups/ag_sanders/work/data/reference/bedfiles/hg38_chromosome_lengths.bed \
-        -b $bamfile > ${bychromdp_dir}/${library}_mean_depth_bychrom.txt
+        	-a //fast/groups/ag_sanders/work/data/references/bedfiles/hg38_chromosome_lengths.bed \
+        	-b $bamfile > ${bychromdp_dir}/${library}_mean_depth_bychrom.txt
 
-    # insert sizes
-    picard CollectInsertSizeMetrics -I $bamfile -O ${insert_samps_dir}/${library}_insertsizes.txt \
-	   -H ${insert_hist_dir}/${library}_insertsizes.pdf \
-	   --QUIET true --VERBOSITY ERROR # makes log easier to read
+	# insert sizes
+	picard CollectInsertSizeMetrics -I $bamfile -O ${insert_samps_dir}/${library}_insertsizes.txt \
+		-H ${insert_hist_dir}/${library}_insertsizes.pdf \
+		--QUIET true --VERBOSITY ERROR # makes log easier to read
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
 	then
