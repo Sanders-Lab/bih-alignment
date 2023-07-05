@@ -67,7 +67,7 @@ If you already have aligned BAM files and wish to run the quality control script
 sbatch \
     -J alnQC \
     -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment_qc.txt \
-    bih-alignment/scripts/alignment_qc.sh \
+    bih-alignment/scripts/alignment_qc_script.sh \
     $project_name \
     human
 ```
