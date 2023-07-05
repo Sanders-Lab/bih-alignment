@@ -41,8 +41,15 @@ echo "using $n_threads threads"
 printf '\n ### 3. Initiating script #####\n'
 
 # assign/create directories
-bam_dir=//fast/groups/ag_sanders/work/data/${project_name}/bam
-qc_dir=//fast/groups/ag_sanders/work/data/${project_name}/qc ; mkdir -m 775 $qc_dir
+bam_dir=${SLURM_SUBMIT_DIR}/bam
+if [[ ! -d $bam_dir ]]
+then
+	echo "ERROR: this dir does not exist: $bam_dir"
+	echo "please launch QC script from loaction containing a bam dir!"
+	exit
+fi
+
+qc_dir=${SLURM_SUBMIT_DIR}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
 
 sortedwc=$(ls $bam_dir | grep 'sorted' | wc -l)
@@ -83,7 +90,7 @@ printf '\n ### 5. Generate alignement stats #####\n'
 flagstats_dir=${statsdir}/flagstats ; mkdir -m 775 $flagstats_dir
 idxstats_dir=${statsdir}/idxstats ; mkdir -m 775 $idxstats_dir
 bychromdp_dir=${statsdir}/meandepthbychrom ; mkdir -p -m 775 $bychromdp_dir
-binneddp_dir=//fast/groups/ag_sanders/scratch/${project_name}/depthstats ; mkdir -p -m 775 $binneddp_dir
+binneddp_dir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/depthstats ; mkdir -p -m 775 $binneddp_dir
 insert_dir=${statsdir}/insertsizes ; mkdir -m 775 $insert_dir
 insert_hist_dir=${insert_dir}/histograms ; mkdir -m 775 $insert_hist_dir
 insert_samps_dir=${insert_dir}/samples ; mkdir -m 775 $insert_samps_dir
@@ -185,4 +192,3 @@ Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.R \
 	$organism
 
 echo "Finished alignment script on ${project_name}!" ; date
-
