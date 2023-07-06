@@ -254,7 +254,7 @@ if(is.na(n_threads)) stop('set n_threads in command line argument')
 if(is.na(myspecies)) stop('set myspecies in command line argument')
 if(!myspecies %in% c("mouse","human")) stop('myspecies must be set to human or mouse')
 
-print(paste("current work directory:", getwd(),quote=F)
+print(paste("current work directory:", getwd()),quote=F)
 print("terminal arguments loaded", quote = F)
 print(paste("project_name =",project_name), quote = F)
 print(paste("n_threads =",n_threads), quote = F)
