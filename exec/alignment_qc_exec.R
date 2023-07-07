@@ -270,12 +270,17 @@ cl <- parallel::makeCluster(n_threads)
 doParallel::registerDoParallel(cl)
 message("cluster set up")
 
+bigcells = read.table("/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt")$V1
+
 bpr_inputfiles = list.files(bpr_indir)[!grepl(".bai",list.files(bpr_indir))]
+bpr_inputfiles = bpr_inputfiles[!bpr_inputfiles %in% bigcells]
+
 bpR_stats_par = foreach(mybam = bpr_inputfiles, .combine=rbind, .packages = "breakpointR") %dopar% {
     bpR_calcs(file.path(bpr_indir, mybam))
 }
 parallel::stopCluster(cl)
 message("cluster closed")
+
 
 bpR_stats = bpR_stats_par %>% 
     as.data.frame() %>% 
