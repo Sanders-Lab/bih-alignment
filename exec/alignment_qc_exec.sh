@@ -131,8 +131,8 @@ for library in $libraries; do
 done
 wait # wait for all jobs in the above loop to be done
 
-gzip -f ${binneddp_dir}/*
-gzip -f ${insert_samps_dir}/*
+gzip -f ${binneddp_dir}/*txt
+gzip -f ${insert_samps_dir}/*txt
 
 ##################################################################################################
 # 6. Extract QC stats for plotting
