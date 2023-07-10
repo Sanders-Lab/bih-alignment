@@ -146,14 +146,20 @@ for library in $libraries; do
 	echo "combining QC stats in ${library}"
 	bamfile=${bam_dir}/${library}.${sortorsorted}.mdup.bam
 
-	# no. of GC bases in BAM file
-	gc_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr -d '\n' | grep -E -o "G|C" | wc -l)
-	# total no. of bases in BAM file
-	all_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr "\n" " " | sed 's/\s\+//g' | wc -m)
-	# GC content calc
-	gc_content=$(echo $gc_ln / $all_ln | bc -l | head -c4)
-	[ -z "$gc_content" ] && gc_content="NA"
-
+	# only do GC calc on smaller files - otherwise memory crashes
+  	gc_content="NA"
+	sizefilt=$(find $bamfile -size -1G | wc -l) # 1GB filter on bam file size
+ 	if [[ sizefilt -ge 1 ]]
+  	then
+		# no. of GC bases in BAM file
+		gc_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr -d '\n' | grep -E -o "G|C" | wc -l)
+		# total no. of bases in BAM file
+		all_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr "\n" " " | sed 's/\s\+//g' | wc -m)
+		# GC content calc
+		gc_content=$(echo $gc_ln / $all_ln | bc -l | head -c4)
+		[ -z "$gc_content" ] && gc_content="NA"
+	fi
+ 
 	# No. of reads in BAM
 	n_reads=$(samtools view -@ 4 $bamfile | wc -l)
 	[ -z "$n_reads" ] && n_reads="NA"
