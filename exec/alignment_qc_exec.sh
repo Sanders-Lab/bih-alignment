@@ -148,7 +148,7 @@ for library in $libraries; do
 
 	# only do GC calc on smaller files - otherwise memory crashes
   	gc_content="NA"
-	sizefilt=$(find $bamfile -size -1G | wc -l) # 1GB filter on bam file size
+	sizefilt=$(find $bamfile -size 1G | wc -l) # 1GB filter on bam file size
  	if [[ sizefilt -ge 1 ]]
   	then
 		# no. of GC bases in BAM file
