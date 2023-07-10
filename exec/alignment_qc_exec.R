@@ -270,7 +270,7 @@ cl <- parallel::makeCluster(n_threads)
 doParallel::registerDoParallel(cl)
 message("cluster set up")
 
-bigcells = read.table("/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt")$V1
+bigcells = read.table(file.path("/fast/groups/ag_sanders/scratch/sequencing_tmp",project_name,"bigcells.txt"))$V1
 
 bpr_inputfiles = list.files(bpr_indir)[!grepl(".bai",list.files(bpr_indir))]
 bpr_inputfiles = bpr_inputfiles[!bpr_inputfiles %in% bigcells]
