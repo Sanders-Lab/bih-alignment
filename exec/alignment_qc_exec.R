@@ -270,11 +270,15 @@ cl <- parallel::makeCluster(n_threads)
 doParallel::registerDoParallel(cl)
 message("cluster set up")
 
-bigcells = read.table(file.path("/fast/groups/ag_sanders/scratch/sequencing_tmp",project_name,"bigcells.txt"))$V1
-
 bpr_inputfiles = list.files(bpr_indir)[!grepl(".bai",list.files(bpr_indir))]
-bpr_inputfiles = bpr_inputfiles[!bpr_inputfiles %in% bigcells]
 
+# filter out big cells - causes memory to crash for bpR stats step
+bigcells_file = file.path("/fast/groups/ag_sanders/scratch/sequencing_tmp",project_name,"bigcells.txt")
+
+if(file.exists(bigcells_file)){
+	bigcells = read.table(bigcells_file)$V1
+	bpr_inputfiles = bpr_inputfiles[!bpr_inputfiles %in% bigcells]
+}
 bpR_stats_par = foreach(mybam = bpr_inputfiles, .combine=rbind, .packages = "breakpointR") %dopar% {
     bpR_calcs(file.path(bpr_indir, mybam))
 }
