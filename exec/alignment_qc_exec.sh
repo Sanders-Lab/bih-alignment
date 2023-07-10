@@ -186,7 +186,9 @@ wait # wait for all jobs in the above loop to be done
 ##################################################################################################
 printf '\n ### 7. running R script to plot QC metrics  #####\n'
 
-find bam/*bam -size +1G | rev | cut -f1 -d/ | rev > /fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
+bigcells=$(find bam/*bam -size +1G | rev | cut -f1 -d/ | rev)
+nbigcells=$(echo $bigcells | wc -w)
+[ $nbigcells -ge 1 ] bigcells > /fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
 
 Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.R \
 	$project_name \
