@@ -94,6 +94,8 @@ binneddp_dir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/dept
 insert_dir=${statsdir}/insertsizes ; mkdir -m 775 $insert_dir
 insert_hist_dir=${insert_dir}/histograms ; mkdir -m 775 $insert_hist_dir
 insert_samps_dir=${insert_dir}/samples ; mkdir -m 775 $insert_samps_dir
+gc_tmpdir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/gc_bed ; mkdir -m 775 $gc_tmpdir
+gc_dir=${statsdir}/gc_extrapolation ; mkdir -m 775 $gc_dir
 
 libraries=$(ls ${bam_dir}/*bam | sed 's/'.${sortorsorted}.mdup.bam'//g' | sed 's?'${bam_dir}/'??g')
 
@@ -123,6 +125,10 @@ for library in $libraries; do
 	picard CollectInsertSizeMetrics -I $bamfile -O ${insert_samps_dir}/${library}_insertsizes.txt \
 		-H ${insert_hist_dir}/${library}_insertsizes.pdf \
 		--QUIET true --VERBOSITY ERROR # makes log easier to read
+
+  	# compelixty - from Hanlon et al. (2022)
+   	samtools view -@ 3 -h $bamfile | bedtools bamtobed > ${gc_tmpdir}/${library}.bed
+    	preseq gc_extrap -Q -B -D -e 1000000001 -s 1000000000 ${gc_tmpdir}/${library}.bed > ${gc_dir}/$mysamp.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
 	then
@@ -139,7 +145,7 @@ gzip -f ${insert_samps_dir}/*txt
 ##################################################################################################
 printf '\n ### 6. Extract QC stats for plotting  #####\n'
 
-echo -e 'library\tgc_content\tn_reads\tn_reads_mapped\tn_reads_dup\tdupl_rate\tmean_insert_size' > ${statsdir}/all_samples_qc_metrics.txt
+echo -e 'library\tgc_content\tn_reads\tn_reads_mapped\tn_reads_dup\tdupl_rate\tmean_insert_size\tcomplexity' > ${statsdir}/all_samples_qc_metrics.txt
 
 for library in $libraries; do
 	(
@@ -177,8 +183,11 @@ for library in $libraries; do
 	mean_insert=$(zcat ${insert_samps_dir}/${library}_insertsizes.txt.gz | head -n8 | tail -n1 | awk '{print $6}')
 	[ -z "$mean_insert" ] && mean_insert="NA"
 
+ 	# complexity
+  	complexity=$(echo $(cat ${gc_dir}/$mysamp.txt | tail -n1 | cut -f2) / 3031042417 | bc -l | head -c5)
+
 	# save output to file
-	echo $library $gc_content $n_reads $n_reads_mapped $n_reads_dup  $dupl_rate $mean_insert | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
+	echo $library $gc_content $n_reads $n_reads_mapped $n_reads_dup  $dupl_rate $mean_insert $complexity | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
    	then
