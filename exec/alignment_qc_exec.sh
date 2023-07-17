@@ -128,7 +128,7 @@ for library in $libraries; do
 
   	# compelixty - from Hanlon et al. (2022)
    	samtools view -@ 3 -h $bamfile | bedtools bamtobed > ${gc_tmpdir}/${library}.bed
-    	preseq gc_extrap -Q -B -D -e 1000000001 -s 1000000000 ${gc_tmpdir}/${library}.bed > ${gc_dir}/$mysamp.txt
+    	preseq gc_extrap -Q -B -D -e 1000000001 -s 1000000000 ${gc_tmpdir}/${library}.bed > ${gc_dir}/${library}.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
 	then
