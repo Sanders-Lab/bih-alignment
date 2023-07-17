@@ -185,6 +185,7 @@ for library in $libraries; do
 
  	# complexity
   	complexity=$(echo $(cat ${gc_dir}/$mysamp.txt | tail -n1 | cut -f2) / 3031042417 | bc -l | head -c5)
+	[ -z "$complexity" ] && complexity="NA"
 
 	# save output to file
 	echo $library $gc_content $n_reads $n_reads_mapped $n_reads_dup  $dupl_rate $mean_insert $complexity | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
