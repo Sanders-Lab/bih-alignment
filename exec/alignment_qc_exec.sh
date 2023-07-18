@@ -184,7 +184,7 @@ for library in $libraries; do
 	[ -z "$mean_insert" ] && mean_insert="NA"
 
  	# complexity
-  	complexity=$(echo $(cat ${gc_dir}/$mysamp.txt | tail -n1 | cut -f2) / 3031042417 | bc -l | head -c5)
+  	complexity=$(echo $(cat ${gc_dir}/${library}.txt | tail -n1 | cut -f2) / 3031042417 | bc -l | head -c5)
 	[ -z "$complexity" ] && complexity="NA"
 
 	# save output to file
