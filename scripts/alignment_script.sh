@@ -228,10 +228,6 @@ do
 done
 wait # wait for all jobs in the above loop to be done
 
-# change permissions of output folders so all group members can read/write
-chmod -R 774 $bam_dir
-chmod -R 774 $qc_dir
-
 echo "Finished aligning ${project_name}" ; date
 
 ##################################################################################################
@@ -248,6 +244,9 @@ fi
 
 echo "Finished aligning and QC on ${project_name}!" ; date
 
+# change permissions of output folders so all group members can read/write
+chmod -R 774 $bam_dir
+chmod -R 774 $qc_dir
 
 # # move log
 # for x in {a..z}
