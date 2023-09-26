@@ -254,12 +254,13 @@ if(is.na(n_threads)) stop('set n_threads in command line argument')
 if(is.na(myspecies)) stop('set myspecies in command line argument')
 if(!myspecies %in% c("mouse","human")) stop('myspecies must be set to human or mouse')
 
+print(paste("current work directory:", getwd()),quote=F)
 print("terminal arguments loaded", quote = F)
 print(paste("project_name =",project_name), quote = F)
 print(paste("n_threads =",n_threads), quote = F)
 
 # run breakpointR function to calc background
-bpr_indir = file.path("//fast/groups/ag_sanders/work/data",project_name,"bam")
+bpr_indir = file.path(getwd(),"bam")
 if(myspecies == "human") mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
 if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
 
@@ -269,12 +270,22 @@ cl <- parallel::makeCluster(n_threads)
 doParallel::registerDoParallel(cl)
 message("cluster set up")
 
-bpr_inputfiles = list.files(bpr_indir)[!grepl(".bai",list.files(bpr_indir))]
+bpr_inputfiles = list.files(bpr_indir)[endsWith(list.files(bpr_indir),"bam")]
+
+# filter out big cells - causes memory to crash for bpR stats step
+bigcells_file = file.path("/fast/groups/ag_sanders/scratch/sequencing_tmp",project_name,"bigcells.txt")
+
+if(file.exists(bigcells_file)){
+	bigcells = as.character(read.table(bigcells_file))
+        bpr_inputfiles = bpr_inputfiles[!bpr_inputfiles %in% bigcells]
+        print(paste("removing big cells",bigcells))
+}
 bpR_stats_par = foreach(mybam = bpr_inputfiles, .combine=rbind, .packages = "breakpointR") %dopar% {
     bpR_calcs(file.path(bpr_indir, mybam))
 }
 parallel::stopCluster(cl)
 message("cluster closed")
+
 
 bpR_stats = bpR_stats_par %>% 
     as.data.frame() %>% 
@@ -283,7 +294,7 @@ rownames(bpR_stats) = NULL
 
 
 # load mosaicatcher output and calculate entropy and spikines
-mosaiccatcher_load = read.table(file.path("//fast/groups/ag_sanders/work/data",project_name,"qc/mosaicatcher/counts.txt.gz"),
+mosaiccatcher_load = read.table(file.path(getwd(),"qc/mosaicatcher/counts.txt.gz"),
                                header = T) 
 samplecolname = ifelse("cell" %in% names(mosaiccatcher_load),"cell","sample")
 
@@ -297,10 +308,10 @@ mosaiccatcher_out = mosaiccatcher_load %>%
     select(library=!!as.name(samplecolname), Spikiness, Entropy) %>% 
     distinct()
 
-print(paste("Mosaicatcher data loaded from", file.path("//fast/groups/ag_sanders/work/data",project_name,"qc/mosaicatcher/counts.txt.gz")), quote = F)
+print(paste("Mosaicatcher data loaded from", file.path(getwd(),"qc/mosaicatcher/counts.txt.gz")), quote = F)
 
 # load coverage
-coveragedir=file.path("//fast/groups/ag_sanders/work/data",project_name,"qc/alignment_stats/meandepthbychrom")
+coveragedir=file.path(getwd(),"qc/alignment_stats/meandepthbychrom")
 for(myfile in list.files(coveragedir)){
     currfile = read.table(file.path(coveragedir,myfile), header = F)
     currdf = data.frame(library = gsub("_mean_depth_bychrom.txt","",myfile),
@@ -315,14 +326,14 @@ print(paste("Depth of coverage data loaded from", coveragedir), quote = F)
 
 
 # combine all qc stats
-combined_qc_stats = read.table(file.path("//fast/groups/ag_sanders/work/data",project_name,"qc/alignment_stats/all_samples_qc_metrics.txt"),
+combined_qc_stats = read.table(file.path(getwd(),"qc/alignment_stats/all_samples_qc_metrics.txt"),
            header = T, sep = "\t") %>% 
     left_join(coverage_df) %>% 
     left_join(bpR_stats) %>% 
     left_join(mosaiccatcher_out) %>% 
     arrange(library)
 
-resdir = file.path("//fast/groups/ag_sanders/work/data",project_name,"qc/alignment_stats")
+resdir = file.path(getwd(),"qc/alignment_stats")
 write.table(combined_qc_stats, quote = F, sep = "\t",row.names = F,
             file = file.path(resdir,"all_samples_all_qc_metrics.txt"))
 

@@ -42,7 +42,7 @@ sbatch \
     .1.fastq.gz \
     human
 ```
-* Where `$project_name` is the the name of the directory in `/fast/groups/ag_sanders/work/data` containing the reads, which should contain a dir named `fastq/` with the read files (e.g. set to `P1593` to align reads in `/fast/groups/ag_sanders/work/data/P1593/fastq`). 
+* Where `$project_name` is the the name of sample (e.g. set to `P1593` if you are aligning reads in `/fast/groups/ag_sanders/work/data/P1593/fastq`). 
 
 * The second command line variable (`.1.fastq.gz` in this example) should be the shared suffix of the first mate FASTQ files. The suffix of the second mate is assumed to be the same with a 2 in place of the 1.
 
@@ -67,7 +67,7 @@ If you already have aligned BAM files and wish to run the quality control script
 sbatch \
     -J alnQC \
     -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment_qc.txt \
-    bih-alignment/scripts/alignment_qc.sh \
+    bih-alignment/scripts/alignment_qc_script.sh \
     $project_name \
     human
 ```

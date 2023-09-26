@@ -7,9 +7,8 @@
 #SBATCH --mem-per-cpu=2G
 #SBATCH --exclusive
 #SBATCH --partition=highmem
-#SBATCH --mail-type=ALL
 
-# BIH cluster Paired end sequencing data alignment script June 2022
+# BIH cluster Paired end sequencing data alignment script July 2023
 # This script takes .fastq format files, performs QC on them, before aligning to reference genome and outputting alignment QC metrics 
 echo 'Running alignment script' ; date
 
@@ -19,16 +18,18 @@ echo 'Running alignment script' ; date
 printf '\n ### 1. Setting global options ####\n'
 
 # INPUT: $1 = project name [P3028], $2  = mate1_suffix [.1.fastq.gz], $3 = organism [human/mouse]
+# should be submitted from a directory containing a directory of fastq files of interest
+
 # Needs changing these for each new project:
-project_name=$1 # the name of the folder in //fast/groups/ag_sanders/work/data containig the reads (which should contain a dir named fastq/)
-memperthread=2G # memory assigned per thread in slurm job
-mate1_suffix=$2 # suffix of read pair mate 1 fastq file (e.g. _R1.fastq.gz)
-run_qc=TRUE # whether the alignment QC script should be run automatically [TRUE/FALSE]
+project_name=$1 # the name of the Sample
+mate1_suffix=$2 # suffix of read pair mate 1 fastq file (e.g. .1.fastq.gz)
 organism=$3 # whether alignment is on human or mouse data
+memperthread=2G # memory assigned per thread in slurm job
+run_qc=TRUE # whether the alignment QC script should be run automatically [TRUE/FALSE]
 
 # Probably don't need changing at the start of a new project:
 mate2_suffix=$(echo $mate1_suffix | sed 's/1/2/') # suffix of mate 2 fastq file
-fastq_dir=//fast/groups/ag_sanders/work/data/${project_name}/fastq # dir containing fastq format files
+fastq_dir=$SLURM_SUBMIT_DIR/fastq # dir containing fastq format files
 n_threads=$(nproc) # number of threads given to slurm job, for highest efficiency use a multiple of 4 (e.g. 32, 64, etc.)
 n_threads_divided=$(expr $n_threads / 4)
 submit_dir=$SLURM_SUBMIT_DIR
@@ -36,11 +37,11 @@ submit_dir=$SLURM_SUBMIT_DIR
 # set reference genome
 if [ $organism = 'human' ]
 then
-	ref_genome=//fast/groups/ag_sanders/work/data/reference/genomes/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz # path to reference genome
+	ref_genome=//fast/groups/ag_sanders/work/data/references/genomes/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz # path to reference genome
 	echo "Aligning human data, reference genome set to: $ref_genome"
 elif [ $organism = 'mouse' ]
 then
-	ref_genome=//fast/groups/ag_sanders/work/data/reference/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
+	ref_genome=//fast/groups/ag_sanders/work/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
 	echo "Aligning mouse data, reference genome set to: $ref_genome"
 else
 	echo "ERROR: command line argument 3 must be [human/mouse], currently it is: $organism"
@@ -74,9 +75,9 @@ conda activate alignmentenv
 printf '\n ### 3. Initiating script #####\n'
 
 # test if sequencing project directory exists
-if [[ ! -d /fast/groups/ag_sanders/work/data/${project_name} ]]
+if [[ ! -d $SLURM_SUBMIT_DIR ]]
 then
-	echo "ERROR: this dir does not exist: /fast/groups/ag_sanders/work/data/${project_name}"
+	echo "ERROR: this dir does not exist: $SLURM_SUBMIT_DIR"
 	echo "please set command line option 1 as a real directory!"
 	exit
 fi
@@ -96,16 +97,6 @@ then
     exit
 fi
 
-# create directories
-tmp_dir=//fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
-bam_dir=//fast/groups/ag_sanders/work/data/${project_name}/bam; mkdir -m 775 $bam_dir
-qc_dir=//fast/groups/ag_sanders/work/data/${project_name}/qc ; mkdir -m 775 $qc_dir
-statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
-logsdir=//fast/groups/ag_sanders/work/data/${project_name}/logs ; mkdir -m 775 $logsdir
-
-echo "Temporary/intermediate files will be written to ${tmp_dir}"
-echo "Final .bam files will be written to ${bam_dir}"
-
 # confirm that there are .fastq files in the fastq_dir
 [ ! $(ls ${fastq_dir}/*${mate1_suffix} | wc -l) -ge 1 ] && { echo "ERROR: no files were found with the suffix ${mate1_suffix} in ${fastq_dir}" ; echo "Please change the mate1_suffix manually in ${SLURM_SUBMIT_DIR}/scripts/alignment_script.sh" ; exit ; }
 testfile=$(ls $fastq_dir | head -n1)
@@ -115,6 +106,18 @@ then
     echo "(the first character of the file ${fastq_dir}/${testfile} is not '@', suggesting it is not correct fastq format)"
 	exit
 fi
+
+# create directories
+tmp_dir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
+bam_dir=${SLURM_SUBMIT_DIR}/bam; mkdir -m 775 $bam_dir
+qc_dir=${SLURM_SUBMIT_DIR}/qc ; mkdir -m 775 $qc_dir
+statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
+logsdir=${SLURM_SUBMIT_DIR}/logs ; mkdir -m 775 $logsdir
+
+echo "Temporary/intermediate files will be written to ${tmp_dir}"
+echo "Final .bam files will be written to ${bam_dir}"
+
+
 
 # test if $run_qc is set correctly
 if [ $run_qc = 'TRUE' ]
@@ -167,16 +170,16 @@ do
 	(
 	echo "performing alignment on ${library}"
 	echo "performing alignment on ${library}" >> $alnlog
-    input1=${fastq_dir}/${library}${mate1_suffix}
-    input2=${fastq_dir}/${library}${mate2_suffix}
+	input1=${fastq_dir}/${library}${mate1_suffix}
+	input2=${fastq_dir}/${library}${mate2_suffix}
 
-    bwa mem -t 4 -v 3 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
-    	$ref_genome $input1 $input2 > ${samdir}/${library}.sam 2>> $alnlog
+	bwa mem -t 8 -v 3 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
+    		$ref_genome $input1 $input2 > ${samdir}/${library}.sam 2>> $alnlog
 	) &
-    if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads / 4 number of iterations to be executed in parallel
-    then
-            wait -n # if there are n_threads_divided iterations running wait here for space to start next job
-    fi
+	if [[ $(jobs -r -p | wc -l) -ge 10 ]]; # allows n_threads / 4 number of iterations to be executed in parallel
+	then
+		wait -n # if there are n_threads_divided iterations running wait here for space to start next job
+	fi
 done
 wait # wait for all jobs in the above loop to be done
 
@@ -201,33 +204,29 @@ for library in $libraries
 do
     (
 	echo "processing ${library}.sam"
-    # convert SAM to BAM
-    samtools view -@ 3 -h -b ${samdir}/${library}.sam > ${bam_tmpdir}/${library}.bam # convert SAM to BAM
+	# convert SAM to BAM
+	samtools view -@ 3 -h -b ${samdir}/${library}.sam > ${bam_tmpdir}/${library}.bam # convert SAM to BAM
 
-    # sort BAM file
-    samtools sort -@ 3 -m $memperthread ${bam_tmpdir}/${library}.bam > ${bam_tmpdir}/${library}.sort.bam
-    samtools index -@ 3 ${bam_tmpdir}/${library}.sort.bam # generate index
+	# sort BAM file
+	samtools sort -@ 3 -m $memperthread ${bam_tmpdir}/${library}.bam > ${bam_tmpdir}/${library}.sort.bam
+	samtools index -@ 3 ${bam_tmpdir}/${library}.sort.bam # generate index
 
-    # Mark duplicated reads in BAM file
-    picard MarkDuplicates -I ${bam_tmpdir}/${library}.sort.bam \
-        -O ${bam_tmpdir}/${library}.sort.mdup.bam \
-        -M ${mdup_metrics_dir}/${library}_mdup_metrics.txt \
-        --QUIET true --VERBOSITY ERROR --TMP_DIR ${mdup_tmpdir} 2>> $duplog
-    samtools index -@ 3 ${bam_tmpdir}/${library}.sort.mdup.bam # generate index
+	# Mark duplicated reads in BAM file
+	picard MarkDuplicates -I ${bam_tmpdir}/${library}.sort.bam \
+        	-O ${bam_tmpdir}/${library}.sort.mdup.bam \
+		-M ${mdup_metrics_dir}/${library}_mdup_metrics.txt \
+        	--QUIET true --VERBOSITY ERROR --TMP_DIR ${mdup_tmpdir} 2>> $duplog
+	samtools index -@ 3 ${bam_tmpdir}/${library}.sort.mdup.bam # generate index
 
 	# copy sorted marked duplicates BAM files and their indexes to work drive
 	cp ${bam_tmpdir}/${library}.sort.mdup.bam* $bam_dir
 	) &
-    if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads / 4 number of iterations to be executed in parallel
-    then
-            wait -n # if there are n_threads_divided iterations running wait here for space to start next job
-    fi
+	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads / 4 number of iterations to be executed in parallel
+    	then
+		wait -n # if there are n_threads_divided iterations running wait here for space to start next job
+	fi
 done
 wait # wait for all jobs in the above loop to be done
-
-# change permissions of output folders so all group members can read/write
-chmod -R 774 $bam_dir
-chmod -R 774 $qc_dir
 
 echo "Finished aligning ${project_name}" ; date
 
@@ -245,6 +244,9 @@ fi
 
 echo "Finished aligning and QC on ${project_name}!" ; date
 
+# change permissions of output folders so all group members can read/write
+chmod -R 774 $bam_dir
+chmod -R 774 $qc_dir
 
 # # move log
 # for x in {a..z}

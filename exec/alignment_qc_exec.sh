@@ -41,8 +41,15 @@ echo "using $n_threads threads"
 printf '\n ### 3. Initiating script #####\n'
 
 # assign/create directories
-bam_dir=//fast/groups/ag_sanders/work/data/${project_name}/bam
-qc_dir=//fast/groups/ag_sanders/work/data/${project_name}/qc ; mkdir -m 775 $qc_dir
+bam_dir=${SLURM_SUBMIT_DIR}/bam
+if [[ ! -d $bam_dir ]]
+then
+	echo "ERROR: this dir does not exist: $bam_dir"
+	echo "please launch QC script from loaction containing a bam dir!"
+	exit
+fi
+
+qc_dir=${SLURM_SUBMIT_DIR}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
 
 sortedwc=$(ls $bam_dir | grep 'sorted' | wc -l)
@@ -63,7 +70,7 @@ echo 'launching singulairty from docker://smei/mosaicatcher-pipeline-rpe1-chr3'
 # 	mosaic count \
 mosaicatcher count \
 	-o ${moscatchdir}/counts.txt.gz -i ${moscatchdir}/counts.info \
-	-x //fast/work/groups/ag_sanders/data/reference/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
+	-x /fast/work/groups/ag_sanders/data/references/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
 	-w 200000 $(ls ${bam_dir}/*.bam)
 
 # run R script to generate mosaicatcher plots
@@ -83,10 +90,12 @@ printf '\n ### 5. Generate alignement stats #####\n'
 flagstats_dir=${statsdir}/flagstats ; mkdir -m 775 $flagstats_dir
 idxstats_dir=${statsdir}/idxstats ; mkdir -m 775 $idxstats_dir
 bychromdp_dir=${statsdir}/meandepthbychrom ; mkdir -p -m 775 $bychromdp_dir
-binneddp_dir=//fast/groups/ag_sanders/scratch/${project_name}/depthstats ; mkdir -p -m 775 $binneddp_dir
+binneddp_dir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/depthstats ; mkdir -p -m 775 $binneddp_dir
 insert_dir=${statsdir}/insertsizes ; mkdir -m 775 $insert_dir
 insert_hist_dir=${insert_dir}/histograms ; mkdir -m 775 $insert_hist_dir
 insert_samps_dir=${insert_dir}/samples ; mkdir -m 775 $insert_samps_dir
+gc_tmpdir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/gc_bed ; mkdir -m 775 $gc_tmpdir
+gc_dir=${statsdir}/gc_extrapolation ; mkdir -m 775 $gc_dir
 
 libraries=$(ls ${bam_dir}/*bam | sed 's/'.${sortorsorted}.mdup.bam'//g' | sed 's?'${bam_dir}/'??g')
 
@@ -104,18 +113,22 @@ for library in $libraries; do
 
 	# depth stats per 200kb bin
 	# bedtools coverage -mean \
- #        -a //fast/groups/ag_sanders/work/data/reference/bedfiles/hg38_bedfile_200kb_intervals.bed \
- #        -b $bamfile > ${binneddp_dir}/${library}_mean_depth_200kb_bin.txt
+	#-a //fast/groups/ag_sanders/work/data/reference/bedfiles/hg38_bedfile_200kb_intervals.bed \
+ 	#-b $bamfile > ${binneddp_dir}/${library}_mean_depth_200kb_bin.txt
 
 	# depth stats per chromo
 	bedtools coverage -mean \
-        -a //fast/groups/ag_sanders/work/data/reference/bedfiles/hg38_chromosome_lengths.bed \
-        -b $bamfile > ${bychromdp_dir}/${library}_mean_depth_bychrom.txt
+        	-a //fast/groups/ag_sanders/work/data/references/bedfiles/hg38_chromosome_lengths.bed \
+        	-b $bamfile > ${bychromdp_dir}/${library}_mean_depth_bychrom.txt
 
-    # insert sizes
-    picard CollectInsertSizeMetrics -I $bamfile -O ${insert_samps_dir}/${library}_insertsizes.txt \
-	   -H ${insert_hist_dir}/${library}_insertsizes.pdf \
-	   --QUIET true --VERBOSITY ERROR # makes log easier to read
+	# insert sizes
+	picard CollectInsertSizeMetrics -I $bamfile -O ${insert_samps_dir}/${library}_insertsizes.txt \
+		-H ${insert_hist_dir}/${library}_insertsizes.pdf \
+		--QUIET true --VERBOSITY ERROR # makes log easier to read
+
+  	# compelixty - from Hanlon et al. (2022)
+   	samtools view -@ 3 -h $bamfile | bedtools bamtobed > ${gc_tmpdir}/${library}.bed
+    	preseq gc_extrap -Q -B -D -e 1000000001 -s 1000000000 ${gc_tmpdir}/${library}.bed > ${gc_dir}/${library}.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
 	then
@@ -124,42 +137,58 @@ for library in $libraries; do
 done
 wait # wait for all jobs in the above loop to be done
 
-gzip -f ${binneddp_dir}/*
-gzip -f ${insert_samps_dir}/*
+gzip -f ${binneddp_dir}/*txt
+gzip -f ${insert_samps_dir}/*txt
 
 ##################################################################################################
 # 6. Extract QC stats for plotting
 ##################################################################################################
 printf '\n ### 6. Extract QC stats for plotting  #####\n'
 
-echo 'library gc_content n_reads n_reads_mapped mean_insert_size' | tr " " "\t" > ${statsdir}/all_samples_qc_metrics.txt
+echo -e 'library\tgc_content\tn_reads\tn_reads_mapped\tn_reads_dup\tdupl_rate\tmean_insert_size\tcomplexity' > ${statsdir}/all_samples_qc_metrics.txt
 
 for library in $libraries; do
 	(
 	echo "combining QC stats in ${library}"
 	bamfile=${bam_dir}/${library}.${sortorsorted}.mdup.bam
 
-	# no. of GC bases in BAM file
-	gc_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr -d '\n' | grep -E -o "G|C" | wc -l)
-    # total no. of bases in BAM file
-	all_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr "\n" " " | sed 's/\s\+//g' | wc -m)
-    # GC content calc
-	gc_content=$(echo $gc_ln / $all_ln | bc -l)
-	[ -z "$gc_content" ] && gc_content="NA"
-
-    # No. of reads in BAM
+	# only do GC calc on smaller files - otherwise memory crashes
+  	gc_content="NA"
+	sizefilt=$(find $bamfile -size 1G | wc -l) # 1GB filter on bam file size
+ 	if [[ sizefilt -ge 1 ]]
+  	then
+		# no. of GC bases in BAM file
+		gc_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr -d '\n' | grep -E -o "G|C" | wc -l)
+		# total no. of bases in BAM file
+		all_ln=$(samtools view -@ 4 $bamfile | awk -F'\t' '{print $10}' | tr "\n" " " | sed 's/\s\+//g' | wc -m)
+		# GC content calc
+		gc_content=$(echo $gc_ln / $all_ln | bc -l | head -c4)
+		[ -z "$gc_content" ] && gc_content="NA"
+	fi
+ 
+	# No. of reads in BAM
 	n_reads=$(samtools view -@ 4 $bamfile | wc -l)
 	[ -z "$n_reads" ] && n_reads="NA"
 	# No. of reads mapped to primary 24 chromosomes
 	n_reads_mapped=$(head -n24 ${idxstats_dir}/${library}_idxstats.txt | awk '{print $3}' | paste -sd+ | bc)
 	[ -z "$n_reads_mapped" ] && n_reads_mapped="NA"
-
-	# mean insert size
+ 	# No. duplicated reads
+  	n_reads_dup=$(samtools view -@ 4 -f 1024 $bamfile | wc -l)
+   	[ -z "$n_reads_dup" ] && n_reads_dup="NA"
+   	# Duplication rate
+    	dupl_rate=$(echo $n_reads_dup / $n_reads | bc -l | head -c4)
+	[ -z "$dupl_rate" ] && dupl_rate="NA"
+	
+ 	# mean insert size
 	mean_insert=$(zcat ${insert_samps_dir}/${library}_insertsizes.txt.gz | head -n8 | tail -n1 | awk '{print $6}')
 	[ -z "$mean_insert" ] && mean_insert="NA"
 
-    # save output to file
-	echo $library $gc_content $n_reads $n_reads_mapped $mean_insert | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
+ 	# complexity
+  	complexity=$(echo $(cat ${gc_dir}/${library}.txt | tail -n1 | cut -f2) / 3031042417 | bc -l | head -c5)
+	[ -z "$complexity" ] && complexity="NA"
+
+	# save output to file
+	echo $library $gc_content $n_reads $n_reads_mapped $n_reads_dup  $dupl_rate $mean_insert $complexity | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
    	then
@@ -173,10 +202,15 @@ wait # wait for all jobs in the above loop to be done
 ##################################################################################################
 printf '\n ### 7. running R script to plot QC metrics  #####\n'
 
+bigcellfile=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
+[ -f $bigcellfile ] && rm $bigcellfile
+bigcells=$(find bam/*bam -size +1G | rev | cut -f1 -d/ | rev)
+nbigcells=$(echo $bigcells | wc -w)
+[ $nbigcells -ge 1 ] && echo $bigcells > /fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
+
 Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.R \
 	$project_name \
 	$n_threads \
 	$organism
 
 echo "Finished alignment script on ${project_name}!" ; date
-
