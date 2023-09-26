@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 #
 #SBATCH --cpus-per-task=80
 #SBATCH --ntasks=1
@@ -50,6 +50,7 @@ fi
 
 
 # print to log
+echo "aligning fastq files in $fastq_dir"
 echo "project_name: ${project_name}, mate1_suffix: ${mate1_suffix}, mate2_suffix: ${mate2_suffix}"
 
 ##################################################################################################
