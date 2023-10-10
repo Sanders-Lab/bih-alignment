@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 #
 #SBATCH --cpus-per-task=80
 #SBATCH --ntasks=1
