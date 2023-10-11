@@ -46,7 +46,7 @@ sbatch \
 
 * The second command line variable (`.1.fastq.gz` in this example) should be the shared suffix of the first mate FASTQ files. The suffix of the second mate is assumed to be the same with a 2 in place of the 1.
 
-* The third command line variable is the organism to which you want to align the reference genome, currently this can either be set to `human` or `mouse`.
+* The third command line variable is the organism to which you want to align the reference genome, currently this can be set to `human` (hg38), `human_t2t` (T2T) or `mouse` (mm39).
 
 You can either edit `${myname}` manually, or (to make your life easier) add them as an environmental bash variables (e.g. by adding `export myname=benedict` to your `~/.bashrc` file). 
 
