@@ -44,7 +44,6 @@ then
 	ref_genome=/fast/groups/ag_sanders/work/data/references/genomes/hs1.fa.gz # path to reference genome
 	echo "Aligning human T2T data, reference genome set to: $ref_genome"
  	organism=human # change for downstream to treat T2T same as hg38 human
-else
 elif [ $organism = 'mouse' ]
 then
 	ref_genome=/fast/groups/ag_sanders/work/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
