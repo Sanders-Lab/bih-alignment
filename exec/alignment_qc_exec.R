@@ -310,25 +310,25 @@ mosaiccatcher_out = mosaiccatcher_load %>%
 
 print(paste("Mosaicatcher data loaded from", file.path(getwd(),"qc/mosaicatcher/counts.txt.gz")), quote = F)
 
-# load coverage
-coveragedir=file.path(getwd(),"qc/alignment_stats/meandepthbychrom")
-for(myfile in list.files(coveragedir)){
-    currfile = read.table(file.path(coveragedir,myfile), header = F)
-    currdf = data.frame(library = gsub("_mean_depth_bychrom.txt","",myfile),
-                        mean_depth = mean(currfile$V4))
-    if(myfile == list.files(coveragedir)[1]){
-        coverage_df = currdf
-    }else{
-        coverage_df = rbind(coverage_df, currdf)
-    }
-}
-print(paste("Depth of coverage data loaded from", coveragedir), quote = F)
+# # load coverage
+# coveragedir=file.path(getwd(),"qc/alignment_stats/meandepthbychrom")
+# for(myfile in list.files(coveragedir)){
+#     currfile = read.table(file.path(coveragedir,myfile), header = F)
+#     currdf = data.frame(library = gsub("_mean_depth_bychrom.txt","",myfile),
+#                         mean_depth = mean(currfile$V4))
+#     if(myfile == list.files(coveragedir)[1]){
+#         coverage_df = currdf
+#     }else{
+#         coverage_df = rbind(coverage_df, currdf)
+#     }
+# }
+# print(paste("Depth of coverage data loaded from", coveragedir), quote = F)
 
 
 # combine all qc stats
 combined_qc_stats = read.table(file.path(getwd(),"qc/alignment_stats/all_samples_qc_metrics.txt"),
            header = T, sep = "\t") %>% 
-    left_join(coverage_df) %>% 
+    # left_join(coverage_df) %>% 
     left_join(bpR_stats) %>% 
     left_join(mosaiccatcher_out) %>% 
     arrange(library)
