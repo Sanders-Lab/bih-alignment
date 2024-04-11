@@ -346,7 +346,7 @@ print(paste("Plotting QC metrics to", resdir), quote = F)
 
 # change colnames
 combined_qc_stats = combined_qc_stats %>% 
-    rename(`GC content (%)` = gc_content, `No. of reads` = n_reads, `No. of reads mapped` = n_reads_mapped,
+    rename(`GC content (%)` = gc_content, `No. of reads` = n_reads, `No. of reads unique` = n_reads_mapped_uniq,
            `Mean insert size (bp)` = mean_insert_size, `Mean depth` = mean_depth,
            Background = background.estimate, `Median reads per Mb` = med.reads.per.MB,
            `Coverage (%)` = perc.coverage)
