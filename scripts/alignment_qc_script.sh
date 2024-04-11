@@ -6,8 +6,6 @@
 #SBATCH --cpus-per-task=64
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
-#SBATCH --partition=highmem
-#SBATCH --exclusive
 #SBATCH --time=2-00:00
 #SBATCH --mem-per-cpu=2G
 
