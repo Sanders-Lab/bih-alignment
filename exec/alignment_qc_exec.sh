@@ -151,7 +151,7 @@ gzip -f ${insert_samps_dir}/*txt
 ##################################################################################################
 printf '\n ### 6. Extract QC stats for plotting  #####\n'
 
-echo -e 'library\tgc_content\tn_reads\tn_reads_mapped\tn_reads_dup\tdupl_rate\tmean_insert_size\tcomplexity\tcoverage_samtools\tmeandp_samtools' > ${statsdir}/all_samples_qc_metrics.txt
+echo -e 'library\tgc_content\tn_reads\tn_reads_mapped_uniq\tn_reads_dup\tdupl_rate\tmean_insert_size\tcomplexity\tcoverage_samtools\tmeandp_samtools' > ${statsdir}/all_samples_qc_metrics.txt
 
 for library in $libraries; do
 	(
@@ -173,9 +173,11 @@ for library in $libraries; do
 	fi
  
 	# No. of reads in BAM
-	# n_reads=$(samtools view -@ 4 $bamfile | wc -l)
- 	n_reads=$(samtools view -c -@ 4 -f 66 -F 3200 $bamfile) # take only unique, first in pair reads that are mapped in proper pair
-	[ -z "$n_reads" ] && n_reads="NA"
+	n_reads=$(samtools view -c -@ 4 -f 64 $bamfile) # count only first read in pair
+ 	[ -z "$n_reads" ] && n_reads="NA"
+	# unique reads that are mapped
+ 	n_reads_uniq=$(samtools view -c -@ 4 -f 66 -F 3200 $bamfile) # take only unique, first in pair reads that are mapped in proper pair
+	[ -z "$n_reads_uniq" ] && n_reads_uniq="NA"
 	# No. of reads mapped to primary 24 chromosomes
 	# n_reads_mapped=$(head -n24 ${idxstats_dir}/${library}_idxstats.txt | awk '{print $3}' | paste -sd+ | bc)
 	# [ -z "$n_reads_mapped" ] && n_reads_mapped="NA"
@@ -199,7 +201,7 @@ for library in $libraries; do
 	[ -z "$complexity" ] && complexity="NA"
 
 	# save output to file
-	echo $library $gc_content $n_reads $n_reads_dup  $dupl_rate $mean_insert $complexity $coverage $meandp | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
+	echo $library $gc_content $n_reads $n_reads_uniq $n_reads_dup  $dupl_rate $mean_insert $complexity $coverage $meandp | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
    	then
