@@ -11,6 +11,7 @@
 # BIH cluster Paired end sequencing data alignment script July 2023
 # This script takes .fastq format files, performs QC on them, before aligning to reference genome and outputting alignment QC metrics 
 echo 'Running alignment script' ; date
+echo "SLURM_JOB_ID = $SLURM_JOB_ID, SLURM_JOB_NAME = $SLURM_JOB_NAME"
 
 ##################################################################################################
 # 1. Set global options
