@@ -266,7 +266,7 @@ if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
 
 print(paste("Running breakpointR on bam files in", bpr_indir), quote = F)
 
-cl <- parallel::makeCluster(n_threads)
+cl <- parallel::makeCluster(n_threads, outfile="logs/bpr_dopar_log.txt")
 doParallel::registerDoParallel(cl)
 message("cluster set up")
 
