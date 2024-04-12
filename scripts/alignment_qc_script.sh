@@ -10,7 +10,10 @@
 #SBATCH --mem-per-cpu=2G
 
 # script for running alignment QC *separately* to alignment pipeline (alignment must have already been run successfully)
-# June 2022
+# April 2024
+
+echo "launching script at $(date)"
+echo "SLURM_JOB_ID = $SLURM_JOB_ID, SLURM_JOB_NAME = $SLURM_JOB_NAME"
 
 # INPUT: $1 = project name, $2  = organism
 # Needs changing for each new project:
