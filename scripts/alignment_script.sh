@@ -5,8 +5,6 @@
 #SBATCH --nodes=1
 #SBATCH --time=2-00:00
 #SBATCH --mem-per-cpu=2G
-#SBATCH --exclusive
-#SBATCH --partition=highmem
 
 # BIH cluster Paired end sequencing data alignment script July 2023
 # This script takes .fastq format files, performs QC on them, before aligning to reference genome and outputting alignment QC metrics 
@@ -45,6 +43,11 @@ then
 	ref_genome=/fast/groups/ag_sanders/work/data/references/genomes/human/t2t/hs1.fa.gz # path to reference genome
 	echo "Aligning human T2T data, reference genome set to: $ref_genome"
  	organism=human # change for downstream to treat T2T same as hg38 human
+elif [ $organism = 'human_mt' ]
+then
+	ref_genome=/fast/groups/ag_sanders/scratch/bendy_tmp/20240429_mito_realign/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_MASKED.fna
+	echo "Aligning to human hg38 with NUMTs masked"
+	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'mouse' ]
 then
 	ref_genome=/fast/groups/ag_sanders/work/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
