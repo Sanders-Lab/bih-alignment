@@ -51,6 +51,7 @@ fi
 
 qc_dir=${SLURM_SUBMIT_DIR}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
+logsdir=${SLURM_SUBMIT_DIR}/logs ; mkdir -m 775 $logsdir
 
 sortedwc=$(ls $bam_dir | grep 'sorted' | wc -l)
 [ $sortedwc = 0 ] && sortorsorted=sort || sortorsorted=sorted
