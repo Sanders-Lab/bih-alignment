@@ -33,6 +33,11 @@ n_threads=$(nproc) # number of threads given to slurm job, for highest efficienc
 n_threads_divided=$(expr $n_threads / 4)
 submit_dir=$SLURM_SUBMIT_DIR
 
+# Find the index of the first occurrence of '1'
+index=$(expr index "$mate1_suffix" "1")
+# Keep the substring after the first occurrence of '1'
+allmates_suffix="${mate1_suffix:$index}"
+
 # set reference genome
 if [ $organism = 'human' ]
 then
@@ -151,7 +156,7 @@ multiqc_dir=${qc_dir}/multiqc ; mkdir -m 775 $multiqc_dir
 
 # run FastQC to generate quality metrics on
 echo "Running FastQC"
-fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*fastq.gz
+fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*${allmates_suffix}
 
 # run multiqc
 echo "Running MutiQC to combine FastQC results"
@@ -165,7 +170,7 @@ echo "MutiQC results saved to: ${multiqc_dir}"
 printf '\n ### 5. Running alignment #####\n'
 
 # make unique list of library names by removing suffixes
-libraries=$(ls $fastq_dir/*fastq.gz \
+libraries=$(ls $fastq_dir/*${allmates_suffix}\
 	| sed -e "s?${fastq_dir}/??g;s?${mate1_suffix}??g;s?${mate2_suffix}??g" \
 	| sort -u)
 
