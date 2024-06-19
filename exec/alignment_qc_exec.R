@@ -266,7 +266,7 @@ if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
 
 print(paste("Running breakpointR on bam files in", bpr_indir), quote = F)
 
-cl <- parallel::makeCluster(n_threads)
+cl <- parallel::makeCluster(n_threads, outfile="logs/bpr_dopar_log.txt")
 doParallel::registerDoParallel(cl)
 message("cluster set up")
 
@@ -310,25 +310,25 @@ mosaiccatcher_out = mosaiccatcher_load %>%
 
 print(paste("Mosaicatcher data loaded from", file.path(getwd(),"qc/mosaicatcher/counts.txt.gz")), quote = F)
 
-# load coverage
-coveragedir=file.path(getwd(),"qc/alignment_stats/meandepthbychrom")
-for(myfile in list.files(coveragedir)){
-    currfile = read.table(file.path(coveragedir,myfile), header = F)
-    currdf = data.frame(library = gsub("_mean_depth_bychrom.txt","",myfile),
-                        mean_depth = mean(currfile$V4))
-    if(myfile == list.files(coveragedir)[1]){
-        coverage_df = currdf
-    }else{
-        coverage_df = rbind(coverage_df, currdf)
-    }
-}
-print(paste("Depth of coverage data loaded from", coveragedir), quote = F)
+# # load coverage
+# coveragedir=file.path(getwd(),"qc/alignment_stats/meandepthbychrom")
+# for(myfile in list.files(coveragedir)){
+#     currfile = read.table(file.path(coveragedir,myfile), header = F)
+#     currdf = data.frame(library = gsub("_mean_depth_bychrom.txt","",myfile),
+#                         mean_depth = mean(currfile$V4))
+#     if(myfile == list.files(coveragedir)[1]){
+#         coverage_df = currdf
+#     }else{
+#         coverage_df = rbind(coverage_df, currdf)
+#     }
+# }
+# print(paste("Depth of coverage data loaded from", coveragedir), quote = F)
 
 
 # combine all qc stats
 combined_qc_stats = read.table(file.path(getwd(),"qc/alignment_stats/all_samples_qc_metrics.txt"),
            header = T, sep = "\t") %>% 
-    left_join(coverage_df) %>% 
+    # left_join(coverage_df) %>% 
     left_join(bpR_stats) %>% 
     left_join(mosaiccatcher_out) %>% 
     arrange(library)
@@ -346,10 +346,10 @@ print(paste("Plotting QC metrics to", resdir), quote = F)
 
 # change colnames
 combined_qc_stats = combined_qc_stats %>% 
-    rename(`GC content (%)` = gc_content, `No. of reads` = n_reads, `No. of reads mapped` = n_reads_mapped,
-           `Mean insert size (bp)` = mean_insert_size, `Mean depth` = mean_depth,
+    rename(`GC content (%)` = gc_content, `No. of reads` = n_reads, `No. of reads unique` = n_reads_mapped_uniq,
+           `Mean insert size (bp)` = mean_insert_size, `Mean depth` = meandp_samtools,
            Background = background.estimate, `Median reads per Mb` = med.reads.per.MB,
-           `Coverage (%)` = perc.coverage)
+           `Coverage (%)` = coverage_samtools)
 
 # define colours for plotting
 metric_names = names(combined_qc_stats)[!names(combined_qc_stats) %in% c("library")] # as not paired end data 

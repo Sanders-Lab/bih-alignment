@@ -5,12 +5,11 @@
 #SBATCH --nodes=1
 #SBATCH --time=2-00:00
 #SBATCH --mem-per-cpu=2G
-#SBATCH --exclusive
-#SBATCH --partition=highmem
 
 # BIH cluster Paired end sequencing data alignment script July 2023
 # This script takes .fastq format files, performs QC on them, before aligning to reference genome and outputting alignment QC metrics 
 echo 'Running alignment script' ; date
+echo "SLURM_JOB_ID = $SLURM_JOB_ID, SLURM_JOB_NAME = $SLURM_JOB_NAME"
 
 ##################################################################################################
 # 1. Set global options
@@ -34,6 +33,11 @@ n_threads=$(nproc) # number of threads given to slurm job, for highest efficienc
 n_threads_divided=$(expr $n_threads / 4)
 submit_dir=$SLURM_SUBMIT_DIR
 
+# Find the index of the first occurrence of '1'
+index=$(expr index "$mate1_suffix" "1")
+# Keep the substring after the first occurrence of '1'
+allmates_suffix="${mate1_suffix:$index}"
+
 # set reference genome
 if [ $organism = 'human' ]
 then
@@ -44,6 +48,11 @@ then
 	ref_genome=/fast/groups/ag_sanders/work/data/references/genomes/human/t2t/hs1.fa.gz # path to reference genome
 	echo "Aligning human T2T data, reference genome set to: $ref_genome"
  	organism=human # change for downstream to treat T2T same as hg38 human
+elif [ $organism = 'human_mt' ]
+then
+	ref_genome=/fast/groups/ag_sanders/scratch/bendy_tmp/20240429_mito_realign/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_MASKED.fna
+	echo "Aligning to human hg38 with NUMTs masked"
+	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'mouse' ]
 then
 	ref_genome=/fast/groups/ag_sanders/work/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
@@ -147,7 +156,7 @@ multiqc_dir=${qc_dir}/multiqc ; mkdir -m 775 $multiqc_dir
 
 # run FastQC to generate quality metrics on
 echo "Running FastQC"
-fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*fastq.gz
+fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*${allmates_suffix}
 
 # run multiqc
 echo "Running MutiQC to combine FastQC results"
@@ -161,7 +170,7 @@ echo "MutiQC results saved to: ${multiqc_dir}"
 printf '\n ### 5. Running alignment #####\n'
 
 # make unique list of library names by removing suffixes
-libraries=$(ls $fastq_dir/*fastq.gz \
+libraries=$(ls $fastq_dir/*${allmates_suffix}\
 	| sed -e "s?${fastq_dir}/??g;s?${mate1_suffix}??g;s?${mate2_suffix}??g" \
 	| sort -u)
 

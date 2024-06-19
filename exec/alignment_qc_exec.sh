@@ -51,6 +51,7 @@ fi
 
 qc_dir=${SLURM_SUBMIT_DIR}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
+logsdir=${SLURM_SUBMIT_DIR}/logs ; mkdir -m 775 $logsdir
 
 sortedwc=$(ls $bam_dir | grep 'sorted' | wc -l)
 [ $sortedwc = 0 ] && sortorsorted=sort || sortorsorted=sorted
@@ -87,8 +88,9 @@ echo "mosaicatcher complete, overview Strand-Seq QC plots can be found at: ${mos
 ##################################################################################################
 printf '\n ### 5. Generate alignement stats #####\n'
 
-flagstats_dir=${statsdir}/flagstats ; mkdir -m 775 $flagstats_dir
-idxstats_dir=${statsdir}/idxstats ; mkdir -m 775 $idxstats_dir
+# flagstats_dir=${statsdir}/flagstats ; mkdir -m 775 $flagstats_dir
+# idxstats_dir=${statsdir}/idxstats ; mkdir -m 775 $idxstats_dir
+coverage_dir=${statsdir}/coverage ; mkdir -p -m 775 $coverage_dir
 bychromdp_dir=${statsdir}/meandepthbychrom ; mkdir -p -m 775 $bychromdp_dir
 binneddp_dir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/depthstats ; mkdir -p -m 775 $binneddp_dir
 insert_dir=${statsdir}/insertsizes ; mkdir -m 775 $insert_dir
@@ -106,10 +108,10 @@ for library in $libraries; do
 	bamfile=${bam_dir}/${library}.${sortorsorted}.mdup.bam
 
 	# flagstats
-	samtools flagstats -@ 4 $bamfile > ${flagstats_dir}/${library}_flagstats.txt
+	# samtools flagstats -@ 4 $bamfile > ${flagstats_dir}/${library}_flagstats.txt
 
 	# alignment statisitcs per chromosome
-	samtools idxstats -@ 4 $bamfile > ${idxstats_dir}/${library}_idxstats.txt
+	# samtools idxstats -@ 4 $bamfile > ${idxstats_dir}/${library}_idxstats.txt
 
 	# depth stats per 200kb bin
 	# bedtools coverage -mean \
@@ -117,12 +119,17 @@ for library in $libraries; do
  	#-b $bamfile > ${binneddp_dir}/${library}_mean_depth_200kb_bin.txt
 
 	# depth stats per chromo
-	bedtools coverage -mean \
-        	-a //fast/groups/ag_sanders/work/data/references/bedfiles/hg38_chromosome_lengths.bed \
-        	-b $bamfile > ${bychromdp_dir}/${library}_mean_depth_bychrom.txt
+	# bedtools coverage -mean \
+        	# -a //fast/groups/ag_sanders/work/data/references/bedfiles/hg38_chromosome_lengths.bed \
+        	# -b $bamfile > ${bychromdp_dir}/${library}_mean_depth_bychrom.txt
+
+  	# samtools coverage
+   	samtools coverage $bamfile > ${coverage_dir}/${library}_coverage.txt
 
 	# insert sizes
-	picard CollectInsertSizeMetrics -I $bamfile -O ${insert_samps_dir}/${library}_insertsizes.txt \
+	picard CollectInsertSizeMetrics \
+ 		-I $bamfile \
+   		-O ${insert_samps_dir}/${library}_insertsizes.txt \
 		-H ${insert_hist_dir}/${library}_insertsizes.pdf \
 		--QUIET true --VERBOSITY ERROR # makes log easier to read
 
@@ -145,7 +152,7 @@ gzip -f ${insert_samps_dir}/*txt
 ##################################################################################################
 printf '\n ### 6. Extract QC stats for plotting  #####\n'
 
-echo -e 'library\tgc_content\tn_reads\tn_reads_mapped\tn_reads_dup\tdupl_rate\tmean_insert_size\tcomplexity' > ${statsdir}/all_samples_qc_metrics.txt
+echo -e 'library\tgc_content\tn_reads\tn_reads_mapped_uniq\tn_reads_dup\tdupl_rate\tmean_insert_size\tcomplexity\tcoverage_samtools\tmeandp_samtools' > ${statsdir}/all_samples_qc_metrics.txt
 
 for library in $libraries; do
 	(
@@ -167,17 +174,24 @@ for library in $libraries; do
 	fi
  
 	# No. of reads in BAM
-	n_reads=$(samtools view -@ 4 $bamfile | wc -l)
-	[ -z "$n_reads" ] && n_reads="NA"
+	n_reads=$(samtools view -c -@ 4 -f 64 $bamfile) # count only first read in pair
+ 	[ -z "$n_reads" ] && n_reads="NA"
+	# unique reads that are mapped
+ 	n_reads_uniq=$(samtools view -c -@ 4 -f 66 -F 3200 $bamfile) # take only unique, first in pair reads that are mapped in proper pair
+	[ -z "$n_reads_uniq" ] && n_reads_uniq="NA"
 	# No. of reads mapped to primary 24 chromosomes
-	n_reads_mapped=$(head -n24 ${idxstats_dir}/${library}_idxstats.txt | awk '{print $3}' | paste -sd+ | bc)
-	[ -z "$n_reads_mapped" ] && n_reads_mapped="NA"
+	# n_reads_mapped=$(head -n24 ${idxstats_dir}/${library}_idxstats.txt | awk '{print $3}' | paste -sd+ | bc)
+	# [ -z "$n_reads_mapped" ] && n_reads_mapped="NA"
  	# No. duplicated reads
-  	n_reads_dup=$(samtools view -@ 4 -f 1024 $bamfile | wc -l)
+  	n_reads_dup=$(samtools view -@ 4 -f 1090 $bamfile | wc -l)
    	[ -z "$n_reads_dup" ] && n_reads_dup="NA"
    	# Duplication rate
     	dupl_rate=$(echo $n_reads_dup / $n_reads | bc -l | head -c4)
 	[ -z "$dupl_rate" ] && dupl_rate="NA"
+
+ 	# samtools coverage in autosomes and X
+  	coverage=$(awk -F'\t' 'NR > 1 && NR <= 24 { sum += $6; n++ } END { if (n > 0) print sum / n }' ${coverage_dir}/${library}_coverage.txt)
+   	meandp=$(awk -F'\t' 'NR > 1 && NR <= 24 { sum += $7; n++ } END { if (n > 0) print sum / n }' ${coverage_dir}/${library}_coverage.txt)
 	
  	# mean insert size
 	mean_insert=$(zcat ${insert_samps_dir}/${library}_insertsizes.txt.gz | head -n8 | tail -n1 | awk '{print $6}')
@@ -188,7 +202,7 @@ for library in $libraries; do
 	[ -z "$complexity" ] && complexity="NA"
 
 	# save output to file
-	echo $library $gc_content $n_reads $n_reads_mapped $n_reads_dup  $dupl_rate $mean_insert $complexity | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
+	echo $library $gc_content $n_reads $n_reads_uniq $n_reads_dup  $dupl_rate $mean_insert $complexity $coverage $meandp | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
    	then

@@ -21,7 +21,7 @@ This can be achieved with the following script: `/fast/groups/ag_sanders/work/pr
 You can download this repository like so:
 
 ```
-git clone https://github.com/Sanders-Lab/bih-alignment
+git clone -b main git@github.com:Sanders-Lab/bih-alignment.git
 ```
 
 And install the required conda environment (which has all required packages) into your BIH cluster conda workspace like so (you only need to do this once and can then re-use it):
