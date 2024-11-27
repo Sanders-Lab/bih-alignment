@@ -1,13 +1,13 @@
 #!/bin/bash
 #
 #SBATCH --job-name=aln_qc
-#SBATCH --output=//fast/groups/ag_sanders/work/projects/benedict/logs/aln_qc.txt
+#SBATCH --output=/data/cephfs-2/unmirrored/groups/sanders/projects/benedict/logs/aln_qc.txt
 #
 #SBATCH --cpus-per-task=64
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
-#SBATCH --time=2-00:00
-#SBATCH --mem-per-cpu=2G
+#SBATCH --time=1-00:00
+#SBATCH --mem=128G
 
 # script for running alignment QC *separately* to alignment pipeline (alignment must have already been run successfully)
 # April 2024

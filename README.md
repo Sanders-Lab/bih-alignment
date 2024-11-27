@@ -36,7 +36,7 @@ Once the repo is cloned you can launch the complete alignment and QC pipeline li
 ```
 sbatch \
     -J alignment \
-    -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment.txt \
+    -o /data/cephfs-2/unmirrored/groups/sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment.txt \
     bih-alignment/scripts/alignment_script.sh \
     $project_name \
     .1.fastq.gz \
@@ -66,7 +66,7 @@ If you already have aligned BAM files and wish to run the quality control script
 ```
 sbatch \
     -J alnQC \
-    -o /fast/work/groups/ag_sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment_qc.txt \
+    -o /data/cephfs-2/unmirrored/groups/sanders/projects/${myname}/logs/$(date +%Y%m%d)_${project_name}_alignment_qc.txt \
     bih-alignment/scripts/alignment_qc_script.sh \
     $project_name \
     human
