@@ -222,6 +222,14 @@ bigcells=$(find bam/*bam -size +1G | rev | cut -f1 -d/ | rev)
 nbigcells=$(echo $bigcells | wc -w)
 [ $nbigcells -ge 1 ] && echo $bigcells > /fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
 
+condaenvexists=$(conda env list | grep 'alignmentr' | awk '{print $1}')
+[ -z ${condaenvexists} ] && { echo "ERROR: alignmentr conda env not found in conda env list" ; exit ; } || echo ''
+[ ${condaenvexists} = "alignmentr" ] && echo "alignmentr conda env found in conda env list" || { echo "ERROR: alignmentr conda env not found in conda env list" ; exit ; }
+
+conda init bash
+source ~/.bashrc
+conda activate alignmentr
+
 Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.R \
 	$project_name \
 	$n_threads \
