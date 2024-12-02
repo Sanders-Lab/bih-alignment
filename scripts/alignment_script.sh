@@ -73,7 +73,7 @@ echo "project_name: ${project_name}, mate1_suffix: ${mate1_suffix}, mate2_suffix
 printf '\n ### 2. Activating conda environment ####\n'
 
 # dependencies: r samtools picard bwa fastqc multiqc bedtools
-# the conda env can be installed with: conda env create -f //fast/groups/ag_sanders/work/tools/conda_envs/alignmentenv_20220505.yml
+# the conda env can be installed with: conda env create --force --file bih-alignment/alignmentenv_20231010.yml
 
 # test if conda env is present
 condaenvexists=$(conda env list | grep 'alignmentenv' | awk '{print $1}')
