@@ -28,7 +28,7 @@ And install the required conda environments (which have all required packages) i
 
 ```
 # bash environment
-conda env create --force --file bih-alignment/alignmentenv_20220905.yml
+conda env create --force --file bih-alignment/alignmentenv_20231010.yml
 # R environment
 conda env create --file bih_alignment/alignmentr.yml
 ```
