@@ -14,7 +14,7 @@ Find more information on how to get raw data here: https://bimsbstatic.mdc-berli
 Note that file boxes will be kept for 14 days only!
 
 Depending on how closely the Genomics Platform paid attention to our submission form, you may have to edit the filenames of the FASTQ files to get them into our desired format (i.e. `P3069_i301.1.fastq.gz`). 
-This can be achieved with the script (here)[https://github.com/Sanders-Lab/misc-scripts/tree/master/1-fastq-name-edit], which compares the indices in the FASTQ header to those that we submitted , and uses this information to rename the file accordingly. 
+This can be achieved with the script [here](https://github.com/Sanders-Lab/misc-scripts/tree/master/1-fastq-name-edit), which compares the indices in the FASTQ header to those that we submitted , and uses this information to rename the file accordingly. 
 
 ## 2. 📕 Installation
 
