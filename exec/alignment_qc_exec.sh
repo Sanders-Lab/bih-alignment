@@ -17,6 +17,8 @@ n_threads=$(nproc) # number of threads given to slurm job, for best results use 
 n_threads_divided=$(expr $n_threads / 4)
 echo "using $n_threads threads"
 
+tmp_dir=/data/cephfs-1/scratch/groups/sanders/alignment_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
+
 ##################################################################################################
 # 2. Activate conda environment
 ##################################################################################################
@@ -71,7 +73,7 @@ echo 'launching singulairty from docker://smei/mosaicatcher-pipeline-rpe1-chr3'
 # 	mosaic count \
 mosaicatcher count \
 	-o ${moscatchdir}/counts.txt.gz -i ${moscatchdir}/counts.info \
-	-x /fast/work/groups/ag_sanders/data/references/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
+	-x /data/cephfs-2/unmirrored/groups/sanders/data/references/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
 	-w 200000 $(ls ${bam_dir}/*.bam)
 
 # run R script to generate mosaicatcher plots
@@ -92,11 +94,11 @@ printf '\n ### 5. Generate alignement stats #####\n'
 # idxstats_dir=${statsdir}/idxstats ; mkdir -m 775 $idxstats_dir
 coverage_dir=${statsdir}/coverage ; mkdir -p -m 775 $coverage_dir
 bychromdp_dir=${statsdir}/meandepthbychrom ; mkdir -p -m 775 $bychromdp_dir
-binneddp_dir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/depthstats ; mkdir -p -m 775 $binneddp_dir
+binneddp_dir=${tmp_dir}/depthstats ; mkdir -p -m 775 $binneddp_dir
 insert_dir=${statsdir}/insertsizes ; mkdir -m 775 $insert_dir
 insert_hist_dir=${insert_dir}/histograms ; mkdir -m 775 $insert_hist_dir
 insert_samps_dir=${insert_dir}/samples ; mkdir -m 775 $insert_samps_dir
-gc_tmpdir=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/gc_bed ; mkdir -m 775 $gc_tmpdir
+gc_tmpdir=${tmp_dir}/gc_bed ; mkdir -m 775 $gc_tmpdir
 gc_dir=${statsdir}/gc_extrapolation ; mkdir -m 775 $gc_dir
 
 libraries=$(ls ${bam_dir}/*bam | sed 's/'.${sortorsorted}.mdup.bam'//g' | sed 's?'${bam_dir}/'??g')
@@ -172,7 +174,7 @@ for library in $libraries; do
 		gc_content=$(echo $gc_ln / $all_ln | bc -l | head -c4)
 		[ -z "$gc_content" ] && gc_content="NA"
 	fi
- 
+
 	# No. of reads in BAM
 	n_reads=$(samtools view -c -@ 4 -f 64 $bamfile) # count only first read in pair
  	[ -z "$n_reads" ] && n_reads="NA"
@@ -192,7 +194,7 @@ for library in $libraries; do
  	# samtools coverage in autosomes and X
   	coverage=$(awk -F'\t' 'NR > 1 && NR <= 24 { sum += $6; n++ } END { if (n > 0) print sum / n }' ${coverage_dir}/${library}_coverage.txt)
    	meandp=$(awk -F'\t' 'NR > 1 && NR <= 24 { sum += $7; n++ } END { if (n > 0) print sum / n }' ${coverage_dir}/${library}_coverage.txt)
-	
+
  	# mean insert size
 	mean_insert=$(zcat ${insert_samps_dir}/${library}_insertsizes.txt.gz | head -n8 | tail -n1 | awk '{print $6}')
 	[ -z "$mean_insert" ] && mean_insert="NA"
@@ -216,11 +218,11 @@ wait # wait for all jobs in the above loop to be done
 ##################################################################################################
 printf '\n ### 7. running R script to plot QC metrics  #####\n'
 
-bigcellfile=/fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
+bigcellfile=${tmp_dir}/bigcells.txt
 [ -f $bigcellfile ] && rm $bigcellfile
 bigcells=$(find bam/*bam -size +1G | rev | cut -f1 -d/ | rev)
 nbigcells=$(echo $bigcells | wc -w)
-[ $nbigcells -ge 1 ] && echo $bigcells > /fast/groups/ag_sanders/scratch/sequencing_tmp/${project_name}/bigcells.txt
+[ $nbigcells -ge 1 ] && echo $bigcells > $bigcellfile
 
 condaenvexists=$(conda env list | grep 'alignmentr' | awk '{print $1}')
 [ -z ${condaenvexists} ] && { echo "ERROR: alignmentr conda env not found in conda env list" ; exit ; } || echo ''
