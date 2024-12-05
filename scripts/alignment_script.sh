@@ -149,19 +149,19 @@ fi
 ##################################################################################################
 # 4. Run FastQC quality assessment on raw sequencing data
 ##################################################################################################
-printf '\n ### 4. Run QC on sequencing reads #####\n'
+#printf '\n ### 4. Run QC on sequencing reads #####\n'
 
-fastqc_dir=${qc_dir}/fastqc ; mkdir -m 775 $fastqc_dir
-multiqc_dir=${qc_dir}/multiqc ; mkdir -m 775 $multiqc_dir
+#fastqc_dir=${qc_dir}/fastqc ; mkdir -m 775 $fastqc_dir
+#multiqc_dir=${qc_dir}/multiqc ; mkdir -m 775 $multiqc_dir
 
 # run FastQC to generate quality metrics on
-echo "Running FastQC"
-fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*${allmates_suffix}
+#echo "Running FastQC"
+#fastqc -q -t $n_threads -o ${fastqc_dir} ${fastq_dir}/*${allmates_suffix}
 
 # run multiqc
-echo "Running MutiQC to combine FastQC results"
-multiqc -o $multiqc_dir $fastqc_dir
-echo "MutiQC results saved to: ${multiqc_dir}"
+#echo "Running MutiQC to combine FastQC results"
+#multiqc -o $multiqc_dir $fastqc_dir
+#echo "MutiQC results saved to: ${multiqc_dir}"
 
 
 ##################################################################################################
