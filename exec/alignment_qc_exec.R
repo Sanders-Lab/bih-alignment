@@ -2,6 +2,8 @@
 # 1st CL argument should be project name (i.e. name of dir in /ag_sanders/work/data)
 # 2nd CL argument shiuld be no. of threads to use (e.g. 32)
 
+.libPaths("/fast/AG_Sanders/benedict_workdir/miniforge3/envs/alignmentenv/lib/R/library")
+
 # load libraries
 library(breakpointR)
 library(dplyr)
@@ -273,7 +275,7 @@ message("cluster set up")
 bpr_inputfiles = list.files(bpr_indir)[endsWith(list.files(bpr_indir),"bam")]
 
 # filter out big cells - causes memory to crash for bpR stats step
-bigcells_file = file.path("/fast/groups/ag_sanders/scratch/sequencing_tmp",project_name,"bigcells.txt")
+bigcells_file = file.path("/fast/AG_Sanders/benedict_workdir/tmp/aln_tmp",project_name,"bigcells.txt")
 
 if(file.exists(bigcells_file)){
 	bigcells = as.character(read.table(bigcells_file))

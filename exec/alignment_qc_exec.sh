@@ -17,7 +17,7 @@ n_threads=$(nproc) # number of threads given to slurm job, for best results use 
 n_threads_divided=$(expr $n_threads / 4)
 echo "using $n_threads threads"
 
-tmp_dir=/data/cephfs-1/scratch/groups/sanders/alignment_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
+tmp_dir=/fast/AG_Sanders/benedict_workdir/tmp/aln_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
 
 ##################################################################################################
 # 2. Activate conda environment
@@ -36,6 +36,8 @@ tmp_dir=/data/cephfs-1/scratch/groups/sanders/alignment_tmp/${project_name} ; mk
 
 #conda init bash
 #conda activate alignmentenv
+
+PATH="/fast/AG_Sanders/benedict_workdir/miniforge3/envs/alignmentenv/bin:${PATH}"
 
 ##################################################################################################
 # 3. Initiation
@@ -73,7 +75,7 @@ echo 'launching singulairty from docker://smei/mosaicatcher-pipeline-rpe1-chr3'
 # 	mosaic count \
 mosaicatcher count \
 	-o ${moscatchdir}/counts.txt.gz -i ${moscatchdir}/counts.info \
-	-x /data/cephfs-2/unmirrored/groups/sanders/data/references/exclude/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
+	-x bih-alignment/data/GRCh38_full_analysis_set_plus_decoy_hla.exclude \
 	-w 200000 $(ls ${bam_dir}/*.bam)
 
 # run R script to generate mosaicatcher plots

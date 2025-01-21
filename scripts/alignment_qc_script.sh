@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #SBATCH --job-name=aln_qc
-#SBATCH --output=/data/cephfs-2/unmirrored/groups/sanders/projects/benedict/logs/aln_qc.txt
+#SBATCH --output=/fast/AG_Sanders/benedict_workdir/logs/aln_qc.txt
 #
 #SBATCH --cpus-per-task=64
 #SBATCH --ntasks=1
