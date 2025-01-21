@@ -54,7 +54,7 @@ bpR_calcs = function (bamfile, ID = basename(bamfile), pairedEndReads = TRUE,
                       multi.sizes = NULL, trim = 10, peakTh = 0.33, zlim = 3.291, 
                       background = 0.05, min.mapq = 10, pair2frgm = FALSE, filtAlt = FALSE, 
                       genoT = "fisher", minReads = 10, maskRegions = NULL, conf = 0.99) {
-    requireNamespace(c("breakpointR","GenomicRanges","cowplot","breakpointRdata","methods",
+    requireNamespace(c("breakpointR","GenomicRanges","breakpointRdata","methods",
                                             "utils","grDevices","stats","S4Vectors","GenomeInfoDb",
                                             "IRanges","Rsamtools","GenomicAlignments","ggplot2",
                                             "BiocGenerics","gtools","doParallel","foreach"))
