@@ -188,10 +188,10 @@ do
 	input1=${fastq_dir}/${library}${mate1_suffix}
 	input2=${fastq_dir}/${library}${mate2_suffix}
 
-	bwa mem -t 8 -v 3 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
+	bwa mem -t 4 -v 3 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
     		$ref_genome $input1 $input2 > ${samdir}/${library}.sam 2>> $alnlog
 	) &
-	if [[ $(jobs -r -p | wc -l) -ge 10 ]]; # allows n_threads / 4 number of iterations to be executed in parallel
+	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads / 4 number of iterations to be executed in parallel
 	then
 		wait -n # if there are n_threads_divided iterations running wait here for space to start next job
 	fi
