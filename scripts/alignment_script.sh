@@ -41,11 +41,11 @@ allmates_suffix="${mate1_suffix:$index}"
 # set reference genome
 if [ $organism = 'human' ]
 then
-	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/datareferences/genomes/human/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna # path to reference genome
+	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna # path to reference genome
 	echo "Aligning human data, reference genome set to: $ref_genome"
 elif [ $organism = 'human_t2t' ]
 then
-	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/datareferences/genomes/human/t2t/hs1.fa.gz # path to reference genome
+	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/t2t/hs1.fa.gz # path to reference genome
 	echo "Aligning human T2T data, reference genome set to: $ref_genome"
  	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'human_mt' ]
@@ -55,7 +55,7 @@ then
 	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'mouse' ]
 then
-	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/datareferences/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
+	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
 	echo "Aligning mouse data, reference genome set to: $ref_genome"
 else
 	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse], currently it is: $organism"
