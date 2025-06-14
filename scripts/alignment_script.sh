@@ -57,8 +57,12 @@ elif [ $organism = 'mouse' ]
 then
 	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
 	echo "Aligning mouse data, reference genome set to: $ref_genome"
-else
-	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse], currently it is: $organism"
+elif [ $organism = 'rhink' ]
+then
+	ref_genome=/data/cephfs-1/work/projects/sanders-nwr/references/ncbi_dataset/data/GCA_021442165.1/GCA_021442165.1_CerSimCot1.0_genomic.fna
+	echo "Aligning rhino data, reference genome set to: $ref_genome"
+else # path to reference genome
+	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino], currently it is: $organism"
 	exit
 fi
 
