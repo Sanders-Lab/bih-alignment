@@ -41,26 +41,26 @@ allmates_suffix="${mate1_suffix:$index}"
 # set reference genome
 if [ $organism = 'human' ]
 then
-	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna # path to reference genome
-	echo "Aligning human data, reference genome set to: $ref_genome"
+	reference_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna # path to reference genome
+	echo "Aligning human data, reference genome set to: $reference_genome"
 elif [ $organism = 'human_t2t' ]
 then
-	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/t2t/hs1.fa.gz # path to reference genome
-	echo "Aligning human T2T data, reference genome set to: $ref_genome"
+	reference_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/t2t/hs1.fa.gz # path to reference genome
+	echo "Aligning human T2T data, reference genome set to: $reference_genome"
  	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'human_mt' ]
 then
-	ref_genome=/fast/groups/ag_sanders/scratch/bendy_tmp/20240429_mito_realign/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_MASKED.fna
+	reference_genome=/fast/groups/ag_sanders/scratch/bendy_tmp/20240429_mito_realign/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_MASKED.fna
 	echo "Aligning to human hg38 with NUMTs masked"
 	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'mouse' ]
 then
-	ref_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
-	echo "Aligning mouse data, reference genome set to: $ref_genome"
+	reference_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
+	echo "Aligning mouse data, reference genome set to: $reference_genome"
 elif [ $organism = 'rhino' ]
 then
-	ref_genome=/data/cephfs-1/work/projects/sanders-nwr/references/ncbi_dataset/data/GCA_021442165.1/GCA_021442165.1_CerSimCot1.0_genomic.fna
-	echo "Aligning rhino data, reference genome set to: $ref_genome"
+	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/ncbi_dataset/data/GCA_021442165.1/GCA_021442165.1_CerSimCot1.0_genomic.fna
+	echo "Aligning rhino data, reference genome set to: $reference_genome"
 else # path to reference genome
 	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino], currently it is: $organism"
 	exit
@@ -193,7 +193,7 @@ do
 	input2=${fastq_dir}/${library}${mate2_suffix}
 
 	bwa mem -t 4 -v 3 -R $(echo "@RG\tID:${library}\tSM:${project_name}") \
-    		$ref_genome $input1 $input2 > ${samdir}/${library}.sam 2>> $alnlog
+    		$reference_genome $input1 $input2 > ${samdir}/${library}.sam 2>> $alnlog
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads / 4 number of iterations to be executed in parallel
 	then
