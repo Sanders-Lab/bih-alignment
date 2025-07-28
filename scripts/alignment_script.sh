@@ -61,6 +61,22 @@ elif [ $organism = 'rhino' ]
 then
 	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/ncbi_dataset/data/GCA_021442165.1/GCA_021442165.1_CerSimCot1.0_genomic.fna
 	echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'suni-strand-seq-h1' ]
+then
+	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/strand_seq_phased/SUNI/SUNI.hifiasm.dip.hap1.p_ctg.gfa.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'suni-strand-seq-h2' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/strand_seq_phased/SUNI/SUNI.hifiasm.dip.hap2.p_ctg.gfa.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'suni-scaffold-h1' ]
+then
+	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/SUNI/SUNI_H1_refScaf.scaffold.fixed.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'suni-scaffold-h2' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/SUNI/SUNI_H2_refScaf.scaffold.fixed.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
 else # path to reference genome
 	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino], currently it is: $organism"
 	exit
