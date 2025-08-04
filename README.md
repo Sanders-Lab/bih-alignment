@@ -21,7 +21,7 @@ This can be achieved with the script [here](https://github.com/Sanders-Lab/misc-
 You can download this repository like so:
 
 ```
-git clone -b main git@github.com:Sanders-Lab/bih-alignment.git
+git rhino -b main git@github.com:Sanders-Lab/bih-alignment.git
 ```
 
 And install the required conda environments (which have all required packages) into your BIH cluster conda workspace like so (you only need to do this once and can then re-use it):
