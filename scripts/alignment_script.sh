@@ -85,6 +85,18 @@ elif [ $organism = 'athos-scaffold-h1' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/ATHOS/ATHOS_H1_refScaf.scaffold.fixed.fasta
         echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'ATHOS_H1' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/ATHOS/ATHOS_H1_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'ATHOS_H2' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/ATHOS/ATHOS_H2_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'SUNI_H2' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/SUNI/SUNI_H2_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
 else # path to reference genome
 	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino], currently it is: $organism"
 	exit
