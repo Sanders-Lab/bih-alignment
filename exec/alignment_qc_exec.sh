@@ -78,7 +78,7 @@ mosaicatcher count \
 
 # run R script to generate mosaicatcher plots
 echo 'running mosaicather R script'
-Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/mosaicatcher_qc.R \
+Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/rhino_mosaicatcher_plot.R \
 	${moscatchdir}/counts.txt.gz \
 	${moscatchdir}/counts.info \
 	${moscatchdir}/counts.pdf
