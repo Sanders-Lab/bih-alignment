@@ -252,7 +252,7 @@ myspecies = args[3]
 if(is.na(project_name)) stop('set project_name in command line argument')
 if(is.na(n_threads)) stop('set n_threads in command line argument')
 if(is.na(myspecies)) stop('set myspecies in command line argument')
-if(!myspecies %in% c("mouse","human")) stop('myspecies must be set to human or mouse')
+if(!myspecies %in% c("mouse","human",'SUNI_H1')) stop('myspecies must be set to human or mouse')
 
 print(paste("current work directory:", getwd()),quote=F)
 print("terminal arguments loaded", quote = F)
@@ -263,7 +263,7 @@ print(paste("n_threads =",n_threads), quote = F)
 bpr_indir = file.path(getwd(),"bam")
 if(myspecies == "human") mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
 if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
-if(myspecies == "mouse") mychroms = paste0('CM0381',51:92,'.1_RagTag')
+if(myspecies == "SUNI_H1") mychroms = paste0('CM0381',51:92,'.1_RagTag')
 
 print(paste("Running breakpointR on bam files in", bpr_indir), quote = F)
 
