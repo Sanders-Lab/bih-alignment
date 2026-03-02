@@ -263,6 +263,7 @@ print(paste("n_threads =",n_threads), quote = F)
 bpr_indir = file.path(getwd(),"bam")
 if(myspecies == "human") mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
 if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
+if(myspecies == "mouse") mychroms = paste0('CM0381',51:92,'.1_RagTag')
 
 print(paste("Running breakpointR on bam files in", bpr_indir), quote = F)
 
