@@ -281,9 +281,17 @@ if(file.exists(bigcells_file)){
         bpr_inputfiles = bpr_inputfiles[!bpr_inputfiles %in% bigcells]
         print(paste("removing big cells",bigcells))
 }
-bpR_stats_par = foreach(mybam = bpr_inputfiles, .combine=rbind, .packages = "breakpointR") %dopar% {
-    bpR_calcs(file.path(bpr_indir, mybam))
+#bpR_stats_par = foreach(mybam = bpr_inputfiles, .combine=rbind, .packages = "breakpointR") %dopar% {
+#    bpR_calcs(file.path(bpr_indir, mybam))
+#}#
+results_list <- vector("list", length(bpr_inputfiles))
+
+for (i in seq_along(bpr_inputfiles)) {
+  results_list[[i]] <- bpR_calcs(file.path(bpr_indir, bpr_inputfiles[i]))
 }
+
+bpR_stats_par <- do.call(rbind, results_list)
+
 parallel::stopCluster(cl)
 message("cluster closed")
 
