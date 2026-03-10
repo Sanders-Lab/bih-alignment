@@ -101,8 +101,24 @@ elif [ $organism = 'SUNI_H2' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/SUNI/SUNI_H2_final.fasta
         echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'ATHOS_H1_FINAL' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/ATHOS_H1_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'ATHOS_H2_FINAL' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/ATHOS_H2_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'SUNI_H1_FINAL' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H1_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'SUNI_H2_FINAL' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H2_final.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
 else # path to reference genome
-	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino], currently it is: $organism"
+	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino/RHINO_HAP_FINAL], currently it is: $organism"
 	exit
 fi
 
