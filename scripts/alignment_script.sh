@@ -183,7 +183,7 @@ then
 fi
 
 # create directories
-tmp_dir=/data/cephfs-1/scratch/groups/sanders/alignment_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
+tmp_dir=/data/cephfs-1/scratch/projects/sanders-nwr/alignment_tmp/${project_name} ; mkdir -p -m 775 $tmp_dir
 bam_dir=${SLURM_SUBMIT_DIR}/bam; mkdir -m 775 $bam_dir
 qc_dir=${SLURM_SUBMIT_DIR}/qc ; mkdir -m 775 $qc_dir
 statsdir=${qc_dir}/alignment_stats ; mkdir -m 775 $statsdir
