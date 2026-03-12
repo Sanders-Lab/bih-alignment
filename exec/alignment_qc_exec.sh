@@ -232,9 +232,11 @@ conda init bash
 source ~/.bashrc
 conda activate alignmentr
 
+n_r_threads=$(expr $n_threads / 2) # reduce no. of threads for R parrellisation to prevent out of mem erros
+
 Rscript ${SLURM_SUBMIT_DIR}/bih-alignment/exec/alignment_qc_exec.R \
 	$project_name \
-	$n_threads \
+	$n_r_threads \
 	$organism
 
 echo "Finished alignment script on ${project_name}!" ; date
