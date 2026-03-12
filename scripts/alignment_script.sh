@@ -41,7 +41,7 @@ allmates_suffix="${mate1_suffix:$index}"
 # set reference genome
 if [ $organism = 'human' ]
 then
-	reference_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/human/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna # path to reference genome
+	reference_genome=/data/cephfs-1/work/groups/sanders/references/genomes/human/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna # path to reference genome
 	echo "Aligning human data, reference genome set to: $reference_genome"
 elif [ $organism = 'human_t2t' ]
 then
