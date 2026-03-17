@@ -261,9 +261,17 @@ print(paste("n_threads =",n_threads), quote = F)
 
 # run breakpointR function to calc background
 bpr_indir = file.path(getwd(),"bam")
-if(myspecies == "human") mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
-if(myspecies == "mouse") mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
-if(myspecies == "SUNI_H1") mychroms = paste0('CM0381',52:92,'.1_RagTag')
+if(myspecies == "human"){
+	mychroms = paste0(rep("chr",1,24), c(1:22,"X","Y"))
+}else if(myspecies == "mouse"){
+	 mychroms = paste0(rep("chr",1,21), c(1:19,"X","Y"))
+}else if(myspecies == "SUNI_H1"){
+	mychroms = paste0('CM0381',52:92,'.1_RagTag')
+}else if(myspecies %in% c("ATHOS_H1_FINAL",'SUNI_H1_FINAL')){
+	mychroms = paste0('CM0381',52:92,'.1_RagTag_hap1')
+}else {
+	stop('we need new chrom names!')
+}
 
 print(paste("Running breakpointR on bam files in", bpr_indir), quote = F)
 
