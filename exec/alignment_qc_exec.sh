@@ -177,10 +177,10 @@ for library in $libraries; do
 
 	# No. of reads in BAM
 	n_reads_nofilt=$(samtools view -c -@ 4 -f 64 $bamfile) # count only first read in pair
- 	[ -z "$n_reads" ] && n_reads="NA"
+ 	[ -z "$n_reads_nofilt" ] && n_reads_nofilt="NA"
 	# unique reads that are mapped
  	n_reads_good=$(samtools view -c -@ 4 -f 66 -F 3200 -q 10 $bamfile) # take only unique, first in pair reads that are mapped in proper pair with mapping Q >= 10
-	[ -z "$n_reads_uniq" ] && n_reads_uniq="NA"
+	[ -z "$n_reads_good" ] && n_reads_good="NA"
 	# No. of reads mapped to primary 24 chromosomes
 	# n_reads_mapped=$(head -n24 ${idxstats_dir}/${library}_idxstats.txt | awk '{print $3}' | paste -sd+ | bc)
 	# [ -z "$n_reads_mapped" ] && n_reads_mapped="NA"
@@ -188,7 +188,7 @@ for library in $libraries; do
   	n_reads_dup=$(samtools view -@ 4 -f 1090 $bamfile | wc -l)
    	[ -z "$n_reads_dup" ] && n_reads_dup="NA"
    	# Duplication rate
-    	dupl_rate=$(echo $n_reads_dup / $n_reads | bc -l | head -c4)
+    	dupl_rate=$(echo $n_reads_dup / $n_reads_nofilt | bc -l | head -c4)
 	[ -z "$dupl_rate" ] && dupl_rate="NA"
 
  	# samtools coverage in autosomes and X
@@ -204,7 +204,7 @@ for library in $libraries; do
 	[ -z "$complexity" ] && complexity="NA"
 
 	# save output to file
-	echo $library $gc_content $n_reads $n_reads_uniq $n_reads_dup  $dupl_rate $mean_insert $complexity $coverage $meandp | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
+	echo $library $gc_content $n_reads_nofilt $n_reads_good $n_reads_dup  $dupl_rate $mean_insert $complexity $coverage $meandp | tr " " "\t" >> ${statsdir}/all_samples_qc_metrics.txt
 	) &
 	if [[ $(jobs -r -p | wc -l) -ge $n_threads_divided ]]; # allows n_threads number of jobs to be executed in parallel
    	then
