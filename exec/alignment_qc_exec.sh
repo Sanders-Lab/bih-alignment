@@ -176,10 +176,10 @@ for library in $libraries; do
 	fi
 
 	# No. of reads in BAM
-	n_reads=$(samtools view -c -@ 4 -f 64 $bamfile) # count only first read in pair
+	n_reads_nofilt=$(samtools view -c -@ 4 -f 64 $bamfile) # count only first read in pair
  	[ -z "$n_reads" ] && n_reads="NA"
 	# unique reads that are mapped
- 	n_reads_uniq=$(samtools view -c -@ 4 -f 66 -F 3200 $bamfile) # take only unique, first in pair reads that are mapped in proper pair
+ 	n_reads_good=$(samtools view -c -@ 4 -f 66 -F 3200 -q 10 $bamfile) # take only unique, first in pair reads that are mapped in proper pair with mapping Q >= 10
 	[ -z "$n_reads_uniq" ] && n_reads_uniq="NA"
 	# No. of reads mapped to primary 24 chromosomes
 	# n_reads_mapped=$(head -n24 ${idxstats_dir}/${library}_idxstats.txt | awk '{print $3}' | paste -sd+ | bc)
