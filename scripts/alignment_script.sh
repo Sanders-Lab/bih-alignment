@@ -113,6 +113,10 @@ elif [ $organism = 'SUNI_H1_FINAL' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H1_final.fasta
         echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'SUNI_H1_FINAL_renamed' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H1_final.renamed.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'SUNI_H2_FINAL' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H2_final.fasta
