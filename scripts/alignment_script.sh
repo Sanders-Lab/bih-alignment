@@ -55,7 +55,7 @@ then
 	organism=human # change for downstream to treat T2T same as hg38 human
 elif [ $organism = 'mouse' ]
 then
-	reference_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
+	reference_genome=/data/cephfs-1/work/groups/sanders/references/genomes/mouse_mm10/GRCm38.fa # path to reference genome
 	echo "Aligning mouse data, reference genome set to: $reference_genome"
 elif [ $organism = 'rhino' ]
 then
