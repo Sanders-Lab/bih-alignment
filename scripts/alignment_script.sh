@@ -131,7 +131,7 @@ then
         echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'athos_best' ]
 then
-        reference_genome=/reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/athos_best_hap_assembly.fasta
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/athos_best_hap_assembly.fasta
         echo "Aligning rhino data, reference genome set to: $reference_genome"
 else # path to reference genome
 	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino/RHINO_HAP_FINAL], currently it is: $organism"
