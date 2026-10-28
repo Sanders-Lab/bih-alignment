@@ -51,11 +51,11 @@ rhino_chrom_convert = function(df, og_name = 'chrom', filter_na = T){
     chrom_convert = read.table('/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/chrom_convert_key.tsv',
                                header = T) 
     if(og_name != 'chrom'){
-        chrom_convert = select(chrom_convert, !!og_name := chrom, chrom_use)
+        chrom_convert = dplyr::select(chrom_convert, !!og_name := chrom, chrom_use)
     }
     df_proc = df %>% 
         left_join(chrom_convert) %>% 
-        select(-c(!!as.name(og_name)),
+        dplyr::select(-c(!!as.name(og_name)),
                !!og_name := chrom_use) 
     if(filter_na) df_proc = filter(df_proc, !is.na(!!as.name(og_name)))
     if(which(names(df) == og_name)==1) df_proc = dplyr::select(df_proc, !!og_name, everything())
@@ -76,7 +76,7 @@ d = fread(f_in)
 
 # Check that correct files are given:
 # library(asset)
-invisible(assert_that("chrom" %in% colnames(d),
+invisible(assertthat::assert_that("chrom" %in% colnames(d),
             "start" %in% colnames(d) && is.integer(d$start),
             "end" %in% colnames(d) && is.integer(d$end),
             "sample" %in% colnames(d),
@@ -108,10 +108,16 @@ invisible(assert_that("chrom" %in% colnames(d),
 #     left_join(chrom_convert) %>% 
 #     filter(!is.na(chrom_use),
 #            chrom_use != 'chrM') %>% 
-#     select(-c(chrom),
+#     dplyr::select(-c(chrom),
 #            chrom = chrom_use)
 
-d = rhino_chrom_convert(d)
+if(!all(paste0('chr',c(1:40,'X')) %in% unique(d$chrom))){
+    message('converting CM chrom names to chr1, chr2, etc.')
+    d = rhino_chrom_convert(d)
+}else{
+    message('chromosomes appear to be chr1, chr2 etc., no coversion taking place')
+}
+
 
 table(d$chrom)
 new_count = count(d,chrom, name = 'n_new') %>% 
