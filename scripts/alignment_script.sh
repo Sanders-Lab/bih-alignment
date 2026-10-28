@@ -129,6 +129,10 @@ elif [ $organism = 'suni_best_unassigned' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/suni_best_hap_assembly_unassigned.fasta
         echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'suni_best_unassigned_bothhaps' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/suni_best_hap_assembly_unassigned_bothhaps.fasta
+        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'athos_best' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/athos_best_hap_assembly.fasta
