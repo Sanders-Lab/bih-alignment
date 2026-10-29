@@ -56,88 +56,75 @@ then
 elif [ $organism = 'mouse' ]
 then
 	reference_genome=/data/cephfs-2/unmirrored/groups/sanders/data/references/genomes/mouse_mm39/mm39.fa.gz # path to reference genome
-	echo "Aligning mouse data, reference genome set to: $reference_genome"
 elif [ $organism = 'rhino' ]
 then
 	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/ncbi_dataset/data/GCA_021442165.1/GCA_021442165.1_CerSimCot1.0_genomic.fna
-	echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'suni-strand-seq-h1' ]
 then
 	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/strand_seq_phased/SUNI/SUNI.hifiasm.dip.hap1.p_ctg.gfa.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'suni-strand-seq-h2' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/strand_seq_phased/SUNI/SUNI.hifiasm.dip.hap2.p_ctg.gfa.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'suni-scaffold-h1' ]
 then
 	reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/SUNI/SUNI_H1_refScaf.scaffold.fixed.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'suni-scaffold-h2' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/SUNI/SUNI_H2_refScaf.scaffold.fixed.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'athos-scaffold-h2' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/ATHOS/ATHOS_H2_refScaf.scaffold.fixed.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'athos-scaffold-h1' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies/scaffolded/ATHOS/ATHOS_H1_refScaf.scaffold.fixed.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'ATHOS_H1' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/ATHOS/ATHOS_H1_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'ATHOS_H2' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/ATHOS/ATHOS_H2_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'SUNI_H1' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/SUNI/SUNI_H1_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'SUNI_H2' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/final-assemblies/SUNI/SUNI_H2_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'ATHOS_H1_FINAL' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/ATHOS_H1_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'ATHOS_H2_FINAL' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/ATHOS_H2_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'SUNI_H1_FINAL' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H1_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'SUNI_H1_FINAL_renamed' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H1_final.renamed.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'SUNI_H2_FINAL' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/references/david-assemblies-march2026/SUNI_H2_final.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'suni_best' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/suni_best_hap_assembly.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 elif [ $organism = 'suni_best_unassigned' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/suni_best_hap_assembly_unassigned.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
+elif [ $organism = 'suni_best_unassigned_bothhaps' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/suni_best_hap_assembly_unassigned_bothhaps.fasta
+elif [ $organism = 'athos_best_unassigned_bothhaps' ]
+then
+        reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/athos_best_hap_assembly_unassigned_bothhaps.fasta
 elif [ $organism = 'athos_best' ]
 then
         reference_genome=/data/cephfs-1/work/projects/sanders-nwr/analysis/frankenstein/aln-refs/athos_best_hap_assembly.fasta
-        echo "Aligning rhino data, reference genome set to: $reference_genome"
 else # path to reference genome
 	echo "ERROR: command line argument 3 must be one of [human/human_t2t/mouse/rhino/RHINO_HAP_FINAL], currently it is: $organism"
 	exit
 fi
 
+echo "Aligning rhino data, reference genome set to: $reference_genome"
 
 # print to log
 echo "aligning fastq files in $fastq_dir"
