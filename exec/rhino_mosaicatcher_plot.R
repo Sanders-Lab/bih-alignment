@@ -12,7 +12,7 @@ suppressMessages(library(cowplot))
 
 add_overview_plot = T
 
-args = c('counts.txt.gz', 'counts.info' ,'counts.pdf')
+# args = c('counts.txt.gz', 'counts.info' ,'counts.pdf')
 
 args <- commandArgs(trailingOnly = T)
 if (length(args) < 2 || length(args) > 4 || !grepl('\\.pdf$', args[length(args)]) || any(!file.exists(args[1:(length(args)-1)])))  {
@@ -120,7 +120,7 @@ if(!all(paste0('chr',c(1:40,'X')) %in% unique(d$chrom))){
 
 
 table(d$chrom)
-new_count = count(d,chrom, name = 'n_new') %>% 
+new_count = dplyr::count(d,chrom, name = 'n_new') %>% 
     rename(chrom_new = chrom)
 
 # test_df = cbind(new_count[match( chromstouse[chromstouse!='chrM'], new_count$chrom),],
@@ -128,7 +128,9 @@ new_count = count(d,chrom, name = 'n_new') %>%
 #     mutate(same_query = ifelse(n_new == n_og,T,F))
 # 
 # if(!all(test_df$same_query)) stop('error converting chrom names')
-chromstouse = unique(d$chrom)
+chromstouse = as.character(unique(d$chrom[!grepl('h1tg',d$chrom)]))
+
+d = filter(d, chrom %in% chromstouse)
 d = d[, chrom := sub('^chr','',chrom)]
 # d = d[grepl('^([1-9]|[12][0-9]|X|Y)$', chrom),]
 d = d[, chrom := factor(chrom, levels=sub('^chr','',chromstouse), ordered = T)]
@@ -343,7 +345,7 @@ for (s in unique(d$sample))
 
         plot_hst_width = .03 + .13*length(unique(e$class))
         all <- ggdraw() + draw_plot(plt) +
-            draw_plot(plt_hist,                            x=.45, y=.76,  width=plot_hst_width, height=.23) +
+            # draw_plot(plt_hist,                            x=.45, y=.76,  width=plot_hst_width, height=.23) +
             draw_label(paste("Sample:", info_sample_name), x=.29, y=.97, vjust=1, hjust=0, size=14) +
             draw_label(paste("Cell:", info_cell_name),     x=.29, y=.94, vjust=1, hjust=0, size=12) +
             draw_label(paste("Median binwidth:", format(round(info_binwidth/1000,0), big.mark=",", scientific=F),"kb"),
