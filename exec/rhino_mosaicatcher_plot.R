@@ -128,7 +128,7 @@ new_count = dplyr::count(d,chrom, name = 'n_new') %>%
 #     mutate(same_query = ifelse(n_new == n_og,T,F))
 # 
 # if(!all(test_df$same_query)) stop('error converting chrom names')
-chromstouse = as.character(unique(d$chrom[!grepl('h1tg',d$chrom)]))
+chromstouse = as.character(unique(d$chrom[!grepl('h1tg|h2tg',d$chrom)]))
 
 d = filter(d, chrom %in% chromstouse)
 d = d[, chrom := sub('^chr','',chrom)]
@@ -227,6 +227,7 @@ if (add_overview_plot == T) {
 for (s in unique(d$sample))
 {
     for (ce in unique(d[sample == s,]$cell))
+    # for (ce in unique(d[sample == s,]$cell)[1])
     {
         message(paste("* Plotting sample", s, "cell", ce))
 
